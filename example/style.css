@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Helvetica Neue",  Arial, sans-serif;
+  margin: auto;
+}
+
+.bg-image {
+  position: absolute;
+  bottom: -88%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 165px 0 124px;
+  width: 100%;
+  margin: auto;
+  border: #fbab40;
+  height: 100vh;
+  background-color: #242628;
+  background-image: url(./assets/world.svg);
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: 70px;
+  background-origin: padding-box;
+}
+
+.header h3 {
+  text-align: center;
+  color: #ff9e40;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  margin: 0;
+  line-height: 36px;
+}
+
+.header {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+  font-style: normal;
+}
+
+.header > h1 {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 48px;
+  line-height: 150%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.header > p {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 150%;
+  text-align: center;
+  color: #ffffff;
+  flex-grow: 0;
+  margin: 16px 0px;
+}
+
+.options {
+  display: flex;
+  flex-direction: row;
+}
+
+.options > a {
+  color: #ffffff;
+  text-decoration: underline;
+  margin: 0px 8px;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 150%;
+}
+
+.options > a:first-of-type {
+  margin-right: 30px;
+}
+
+.logo {
+  margin-top: 75px;
+}
+
+.logo > img {
+  width: 160px;
+  height: 64px;
+}
+
+.learn-more > a > button {
+  background: #f6821f;
+  border-radius: 4px;
+  border: none;
+  width: 180px;
+  margin-top: 78px;
+  height: 55px;
+  color: #ffffff;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  background: rgba(246, 130, 31, 1);
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+@media screen and (max-width: 1024px) {
+    .container {
+        background-size: contain;
+        background-position-y: center;
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+.container{
+    background-size: contain;
+    background-position-y: center;
+    }
+  pre {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    width: 100%;
+  }
+
+  body {
+    width: 100vw;
+  }
+
+  .header img {
+    margin-left: 0;
+  }
+
+  .installation-steps {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  ol {
+    padding-left: 20px;
+  }
+
+  li {
+    margin-bottom: 5px;
+  }
+}

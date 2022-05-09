@@ -1,0 +1,23 @@
+on: [push]
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    name: Example
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Publish to Cloudflare Pages
+        uses: ./
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 468cce80dfb431f3a4058e6dc6031a44
+          projectName: github-actions-example
+          directory: example
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        id: publish
+      - name: Deployment URL
+        run: echo "${{ steps.publish.outputs.url }}"

@@ -1,0 +1,24 @@
+name: "Cloudflare Pages GitHub Action"
+description: "Publish to Cloudflare Pages"
+branding:
+  icon: "upload-cloud"
+  color: "orange"
+inputs:
+  apiToken:
+    description: "Cloudflare API Token"
+    required: true
+  accountId:
+    description: "Cloudflare Account ID"
+    required: true
+  projectName:
+    description: "The name of the Pages project to upload to"
+    required: true
+  directory:
+    description: "The directory of static assets to upload"
+    required: true
+  gitHubToken:
+    description: "GitHub Token"
+    required: true
+runs:
+  using: "node16"
+  main: "index.js"
