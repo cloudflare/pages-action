@@ -25,7 +25,7 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
          # Run a build step here if your project requires
 
          - name: Publish to Cloudflare Pages
-           uses: cloudflare/pages-action@1
+           uses: cloudflare/pages-action@v1.0.0
            with:
              apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
              accountId: YOUR_ACCOUNT_ID
