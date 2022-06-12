@@ -16125,7 +16125,7 @@ try {
     }
 
     if ${environment} {
-      $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --env="$[environment}"
+      $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --env="${environment}"
     } else {
       $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}"
     }
