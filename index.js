@@ -16155,7 +16155,7 @@ try {
     environmentName,
     productionEnvironment
   }) => {
-    let result = await octokit.rest.repos.createDeploymentStatus({
+    await octokit.rest.repos.createDeploymentStatus({
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
       deployment_id: id,
@@ -16166,7 +16166,6 @@ try {
       description: "Cloudflare Pages",
       state: "success"
     });
-    console.log(result);
   };
   (async () => {
     const gitHubDeployment = await createGitHubDeployment();

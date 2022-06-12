@@ -32,12 +32,13 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              projectName: YOUR_PROJECT_NAME
              directory: YOUR_ASSET_DIRECTORY
              gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+             branch: OPTIONAL_BRANCH_NAME_TO_DEPLOY
    ```
 
 1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_ASSET_DIRECTORY` with the appropriate values to your Pages project.
 
 ### Get account ID
-To find your account ID, log in to the Cloudflare dashboard > select your zone in Account Home > find your account ID in Overview under **API** on the right-side menu. If you have not added a zone, add one by selecting **Add site** . You can purchase a domain from [Cloudflare’s registrar](https://developers.cloudflare.com/registrar/). 
+To find your account ID, log in to the Cloudflare dashboard > select your zone in Account Home > find your account ID in Overview under **API** on the right-side menu. If you have not added a zone, add one by selecting **Add site** . You can purchase a domain from [Cloudflare’s registrar](https://developers.cloudflare.com/registrar/).
 
 If you do not have a zone registered to your account, you can also get your account ID from the `pages.dev` URL. E.g: `https://dash.cloudflare.com/<ACCOUNT_ID>/pages`
 

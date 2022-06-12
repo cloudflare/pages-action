@@ -109,7 +109,7 @@ try {
     environmentName: string;
     productionEnvironment: boolean;
   }) => {
-    let result = await octokit.rest.repos.createDeploymentStatus({
+    await octokit.rest.repos.createDeploymentStatus({
       owner: context.repo.owner,
       repo: context.repo.repo,
       deployment_id: id,
@@ -121,8 +121,6 @@ try {
       description: "Cloudflare Pages",
       state: "success",
     });
-
-    console.log(result);
   };
 
   (async () => {
