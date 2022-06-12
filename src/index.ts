@@ -65,7 +65,7 @@ try {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
 
-    if ${environment} {
+    if ${branch} {
       $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
     } else {
       $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}"
