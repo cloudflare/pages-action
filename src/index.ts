@@ -53,7 +53,7 @@ try {
   const projectName = getInput("projectName", { required: true });
   const directory = getInput("directory", { required: true });
   const gitHubToken = getInput("gitHubToken", { required: true });
-  const environment = getInput("environment", { required: false });
+  const branch = getInput("branch", { required: false });
 
   const octokit = getOctokit(gitHubToken);
 
@@ -66,7 +66,7 @@ try {
     }
 
     if ${environment} {
-      $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --env="${environment}"
+      $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
     } else {
       $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}"
     }
@@ -109,7 +109,7 @@ try {
     environmentName: string;
     productionEnvironment: boolean;
   }) => {
-    await octokit.rest.repos.createDeploymentStatus({
+    let result = await octokit.rest.repos.createDeploymentStatus({
       owner: context.repo.owner,
       repo: context.repo.repo,
       deployment_id: id,
@@ -121,6 +121,8 @@ try {
       description: "Cloudflare Pages",
       state: "success",
     });
+
+    console.log(result);
   };
 
   (async () => {

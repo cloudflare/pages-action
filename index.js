@@ -16115,7 +16115,7 @@ try {
   const projectName = (0, import_core.getInput)("projectName", { required: true });
   const directory = (0, import_core.getInput)("directory", { required: true });
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: true });
-  const environment = (0, import_core.getInput)("environment", { required: false });
+  const branch = (0, import_core.getInput)("branch", { required: false });
   const octokit = (0, import_github.getOctokit)(gitHubToken);
   const createPagesDeployment = async () => {
     await esm_default`
@@ -16125,7 +16125,7 @@ try {
     }
 
     if ${environment} {
-      $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --env="${environment}"
+      $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
     } else {
       $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}"
     }
@@ -16155,7 +16155,7 @@ try {
     environmentName,
     productionEnvironment
   }) => {
-    await octokit.rest.repos.createDeploymentStatus({
+    let result = await octokit.rest.repos.createDeploymentStatus({
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
       deployment_id: id,
@@ -16166,6 +16166,7 @@ try {
       description: "Cloudflare Pages",
       state: "success"
     });
+    console.log(result);
   };
   (async () => {
     const gitHubDeployment = await createGitHubDeployment();
