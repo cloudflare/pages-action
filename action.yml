@@ -19,6 +19,9 @@ inputs:
   gitHubToken:
     description: "GitHub Token"
     required: true
+  envrionment:
+    description: "The envrionment to deploy"
+    required: false
 runs:
   using: "node16"
   main: "index.js"
