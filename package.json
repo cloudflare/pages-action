@@ -24,7 +24,7 @@
     "@actions/core": "^1.8.0",
     "@actions/github": "^5.0.1",
     "shellac": "^0.7.0",
-    "undici": "^5.1.1"
+    "undici": "^5.5.1"
   },
   "devDependencies": {
     "esbuild": "^0.14.38",
