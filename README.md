@@ -52,3 +52,10 @@ To generate an API token:
 7. Select Continue to summary > Create Token.
 
 More information can be found on [our guide for making Direct Upload deployments with continous integration](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/#use-github-actions).
+
+### Specifying a branch
+The branch name is used by Cloudflare Pages to determine if the deployment is production or preview. Read more about
+[git branch build controls](https://developers.cloudflare.com/pages/platform/branch-build-controls/#branch-build-controls).
+
+If you are in a Git workspace, Wrangler will automatically pull the branch information for you. You can override this
+manually by adding the argument `branch: YOUR_BRANCH_NAME`.
