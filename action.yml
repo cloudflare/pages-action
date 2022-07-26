@@ -19,6 +19,9 @@ inputs:
   gitHubToken:
     description: "GitHub Token"
     required: true
+  branch:
+    description: "The name of the branch you want to deploy to"
+    required: false
 runs:
   using: "node16"
   main: "index.js"
