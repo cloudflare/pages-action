@@ -59,3 +59,10 @@ The branch name is used by Cloudflare Pages to determine if the deployment is pr
 
 If you are in a Git workspace, Wrangler will automatically pull the branch information for you. You can override this
 manually by adding the argument `branch: YOUR_BRANCH_NAME`.
+
+## Outputs
+| Name          | Description                          |
+| ------------- | -------------------------------------|
+| `id`          | The ID of the pages deployment       |
+| `url`         | The URL of the pages deployment      |
+| `environment` | The environment that was deployed to |
