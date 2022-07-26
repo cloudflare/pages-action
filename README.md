@@ -54,8 +54,8 @@ To generate an API token:
 More information can be found on [our guide for making Direct Upload deployments with continous integration](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/#use-github-actions).
 
 ## Outputs
-| Name | Description |
-| ---- | ----------- |
-| `id` | The ID of the pages deployment |
-| `url` | The URL of the pages deployment |
+| Name          | Description                          |
+| ------------- | -------------------------------------|
+| `id`          | The ID of the pages deployment       |
+| `url`         | The URL of the pages deployment      |
 | `environment` | The environment that was deployed to |
