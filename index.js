@@ -16114,9 +16114,9 @@ try {
   const accountId = (0, import_core.getInput)("accountId", { required: true });
   const projectName = (0, import_core.getInput)("projectName", { required: true });
   const directory = (0, import_core.getInput)("directory", { required: true });
-  const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: true });
+  const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: false });
   const branch = (0, import_core.getInput)("branch", { required: false });
-  const octokit = (0, import_github.getOctokit)(gitHubToken);
+  const octokit = gitHubToken && (0, import_github.getOctokit)(gitHubToken);
   const createPagesDeployment = async () => {
     await esm_default`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
@@ -16164,7 +16164,7 @@ try {
     });
   };
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    const gitHubDeployment = octokit && await createGitHubDeployment();
     const pagesDeployment = await createPagesDeployment();
     (0, import_core.setOutput)("id", pagesDeployment.id);
     (0, import_core.setOutput)("url", pagesDeployment.url);

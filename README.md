@@ -31,6 +31,7 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              accountId: YOUR_ACCOUNT_ID
              projectName: YOUR_PROJECT_NAME
              directory: YOUR_ASSET_DIRECTORY
+             # Optional, if you want to create a deployment showing the status on your GitHub repo
              gitHubToken: ${{ secrets.GITHUB_TOKEN }}
    ```
 

@@ -18,7 +18,7 @@ inputs:
     required: true
   gitHubToken:
     description: "GitHub Token"
-    required: true
+    required: false
   branch:
     description: "The name of the branch you want to deploy to"
     required: false

@@ -52,10 +52,10 @@ try {
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
   const directory = getInput("directory", { required: true });
-  const gitHubToken = getInput("gitHubToken", { required: true });
+  const gitHubToken = getInput("gitHubToken", { required: false });
   const branch = getInput("branch", { required: false });
 
-  const octokit = getOctokit(gitHubToken);
+  const octokit = gitHubToken && getOctokit(gitHubToken);
 
   const createPagesDeployment = async () => {
     // TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
@@ -120,7 +120,7 @@ try {
   };
 
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    const gitHubDeployment = octokit && await createGitHubDeployment();
 
     const pagesDeployment = await createPagesDeployment();
 
