@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/cloudflare/pages-action#readme",
   "dependencies": {
-    "@actions/core": "^1.8.0",
+    "@actions/core": "^1.9.1",
     "@actions/github": "^5.0.1",
     "shellac": "^0.7.0",
     "undici": "^5.1.1"
