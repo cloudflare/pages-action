@@ -16116,6 +16116,7 @@ try {
   const directory = (0, import_core.getInput)("directory", { required: true });
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: true });
   const branch = (0, import_core.getInput)("branch", { required: false });
+  const skipGithubEnvironment = (0, import_core.getInput)("skipGithubEnvironment", { required: false }) === "true";
   const octokit = (0, import_github.getOctokit)(gitHubToken);
   const createPagesDeployment = async () => {
     await esm_default`
@@ -16164,7 +16165,10 @@ try {
     });
   };
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    let gitHubDeployment;
+    if (!skipGithubEnvironment) {
+      gitHubDeployment = await createGitHubDeployment();
+    }
     const pagesDeployment = await createPagesDeployment();
     (0, import_core.setOutput)("id", pagesDeployment.id);
     (0, import_core.setOutput)("url", pagesDeployment.url);

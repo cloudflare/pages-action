@@ -54,6 +54,7 @@ try {
   const directory = getInput("directory", { required: true });
   const gitHubToken = getInput("gitHubToken", { required: true });
   const branch = getInput("branch", { required: false });
+  const skipGithubEnvironment = getInput("skipGithubEnvironment", { required: false }) === 'true';
 
   const octokit = getOctokit(gitHubToken);
 
@@ -120,7 +121,10 @@ try {
   };
 
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    let gitHubDeployment;
+    if (!skipGithubEnvironment) {
+      gitHubDeployment = await createGitHubDeployment();
+    }
 
     const pagesDeployment = await createPagesDeployment();
 

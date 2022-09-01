@@ -22,6 +22,9 @@ inputs:
   branch:
     description: "The name of the branch you want to deploy to"
     required: false
+  skipGithubEnvironment:
+    description: "Disables the use of Github Environments"
+    required: false
 runs:
   using: "node16"
   main: "index.js"
