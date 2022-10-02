@@ -1,5 +1,5 @@
 import { getInput, setOutput, setFailed } from "@actions/core";
-import { context, getOctokit } from "@actions/github";
+// import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
 
@@ -52,10 +52,10 @@ try {
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
   const directory = getInput("directory", { required: true });
-  const gitHubToken = getInput("gitHubToken", { required: true });
+  // const gitHubToken = getInput("gitHubToken", { required: true });
   const branch = getInput("branch", { required: false });
 
-  const octokit = getOctokit(gitHubToken);
+  // const octokit = getOctokit(gitHubToken);
 
   const createPagesDeployment = async () => {
     // TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
@@ -79,48 +79,48 @@ try {
     return deployment;
   };
 
-  const createGitHubDeployment = async () => {
-    const deployment = await octokit.rest.repos.createDeployment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      ref: context.ref,
-      auto_merge: false,
-      description: "Cloudflare Pages",
-      required_contexts: [],
-    });
+  // const createGitHubDeployment = async () => {
+  //   const deployment = await octokit.rest.repos.createDeployment({
+  //     owner: context.repo.owner,
+  //     repo: context.repo.repo,
+  //     ref: context.ref,
+  //     auto_merge: false,
+  //     description: "Cloudflare Pages",
+  //     required_contexts: [],
+  //   });
 
-    if (deployment.status === 201) {
-      return deployment.data;
-    }
-  };
+  //   if (deployment.status === 201) {
+  //     return deployment.data;
+  //   }
+  // };
 
-  const createGitHubDeploymentStatus = async ({
-    id,
-    url,
-    environmentName,
-    productionEnvironment,
-  }: {
-    id: number;
-    url: string;
-    environmentName: string;
-    productionEnvironment: boolean;
-  }) => {
-    await octokit.rest.repos.createDeploymentStatus({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      deployment_id: id,
-      // @ts-ignore
-      environment: environmentName,
-      environment_url: url,
-      production_environment: productionEnvironment,
-      log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${id}`,
-      description: "Cloudflare Pages",
-      state: "success",
-    });
-  };
+  // const createGitHubDeploymentStatus = async ({
+  //   id,
+  //   url,
+  //   environmentName,
+  //   productionEnvironment,
+  // }: {
+  //   id: number;
+  //   url: string;
+  //   environmentName: string;
+  //   productionEnvironment: boolean;
+  // }) => {
+  //   await octokit.rest.repos.createDeploymentStatus({
+  //     owner: context.repo.owner,
+  //     repo: context.repo.repo,
+  //     deployment_id: id,
+  //     // @ts-ignore
+  //     environment: environmentName,
+  //     environment_url: url,
+  //     production_environment: productionEnvironment,
+  //     log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${id}`,
+  //     description: "Cloudflare Pages",
+  //     state: "success",
+  //   });
+  // };
 
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    // const gitHubDeployment = await createGitHubDeployment();
 
     const pagesDeployment = await createPagesDeployment();
 
@@ -128,20 +128,20 @@ try {
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
 
-    const url = new URL(pagesDeployment.url);
-    const productionEnvironment = pagesDeployment.environment === "production";
-    const environmentName = productionEnvironment
-      ? "Production"
-      : `Preview (${url.host.split(".")[0]})`;
+    // const url = new URL(pagesDeployment.url);
+    // const productionEnvironment = pagesDeployment.environment === "production";
+    // const environmentName = productionEnvironment
+    //   ? "Production"
+    //   : `Preview (${url.host.split(".")[0]})`;
 
-    if (gitHubDeployment) {
-      await createGitHubDeploymentStatus({
-        id: gitHubDeployment.id,
-        url: pagesDeployment.url,
-        environmentName,
-        productionEnvironment,
-      });
-    }
+    // if (gitHubDeployment) {
+    //   await createGitHubDeploymentStatus({
+    //     id: gitHubDeployment.id,
+    //     url: pagesDeployment.url,
+    //     environmentName,
+    //     productionEnvironment,
+    //   });
+    // }
   })();
 } catch (thrown) {
   setFailed(thrown.message);
