@@ -2,57 +2,14 @@ import { getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
-
-// TODO: Confirm types
-
-interface Stage {
-  name: string;
-  started_on: null | string;
-  ended_on: null | string;
-  status: string;
-}
-
-interface Deployment {
-  id: string;
-  short_id: string;
-  project_id: string;
-  project_name: string;
-  environment: string;
-  url: string;
-  created_on: string;
-  modified_on: string;
-  latest_stage: Stage;
-  deployment_trigger: {
-    type: string;
-    metadata: {
-      branch: string;
-      commit_hash: string;
-      commit_message: string;
-      commit_dirty: boolean;
-    };
-  };
-  stages: Stage[];
-  build_config: {
-    build_command: null | string;
-    destination_dir: null | string;
-    root_dir: null | string;
-    web_analytics_tag: null | string;
-    web_analytics_token: null | string;
-    fast_builds: boolean;
-  };
-  env_vars: unknown;
-  kv_namespaces: Record<string, { namespace_id: string }>;
-  aliases: null | string[];
-  is_skipped: boolean;
-  production_branch: string;
-}
+import { Deployment } from '@cloudflare/types';
 
 try {
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
   const directory = getInput("directory", { required: true });
-  const gitHubToken = getInput("gitHubToken", { required: true });
+  const gitHubToken = getInput("gitHubToken", { required: false });
   const branch = getInput("branch", { required: false });
 
   const octokit = getOctokit(gitHubToken);
@@ -97,11 +54,13 @@ try {
   const createGitHubDeploymentStatus = async ({
     id,
     url,
+    deploymentId,
     environmentName,
     productionEnvironment,
   }: {
     id: number;
     url: string;
+    deploymentId: string;
     environmentName: string;
     productionEnvironment: boolean;
   }) => {
@@ -113,13 +72,17 @@ try {
       environment: environmentName,
       environment_url: url,
       production_environment: productionEnvironment,
-      log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${id}`,
+      log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
       description: "Cloudflare Pages",
       state: "success",
     });
   };
 
   (async () => {
+    if (gitHubToken === "") {
+      return;
+    }
+
     const gitHubDeployment = await createGitHubDeployment();
 
     const pagesDeployment = await createPagesDeployment();
@@ -127,17 +90,19 @@ try {
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
+    setOutput("alias", pagesDeployment.environment === "production" ? pagesDeployment.url : pagesDeployment.aliases[0]);
 
-    const url = new URL(pagesDeployment.url);
     const productionEnvironment = pagesDeployment.environment === "production";
     const environmentName = productionEnvironment
       ? "Production"
-      : `Preview (${url.host.split(".")[0]})`;
+      // Use the branch alias (staging/walshy-fix-bug)
+      : `Preview (${pagesDeployment.aliases[0]})`;
 
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,
         url: pagesDeployment.url,
+        deploymentId: pagesDeployment.id,
         environmentName,
         productionEnvironment,
       });
