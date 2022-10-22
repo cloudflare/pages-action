@@ -2,7 +2,7 @@ import { getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
-import { Deployment } from '@cloudflare/types';
+import type { Deployment } from '@cloudflare/types';
 
 try {
   const apiToken = getInput("apiToken", { required: true });
@@ -87,19 +87,21 @@ try {
 
     const pagesDeployment = await createPagesDeployment();
 
-    // wut
-    console.log(pagesDeployment);
+    const productionEnvironment = pagesDeployment.environment === "production";
 
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
-    setOutput("alias", pagesDeployment.environment === "production" ? pagesDeployment.url : pagesDeployment.aliases[0]);
+    setOutput("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
 
-    const productionEnvironment = pagesDeployment.environment === "production";
-    const environmentName = productionEnvironment
-      ? "Production"
+    let environmentName: string;
+    if (productionEnvironment) {
+      environmentName = "Production"
+    } else {
+      const url = new URL(pagesDeployment.aliases[0]);
       // Use the branch alias (staging/walshy-fix-bug)
-      : `Preview (${pagesDeployment.aliases[0]})`;
+      environmentName = `Preview (${url.hostname.split(".")[0]})`;
+    }
 
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({

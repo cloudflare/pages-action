@@ -22123,13 +22123,18 @@ try {
     }
     const gitHubDeployment = await createGitHubDeployment();
     const pagesDeployment = await createPagesDeployment();
-    console.log(pagesDeployment);
+    const productionEnvironment = pagesDeployment.environment === "production";
     (0, import_core.setOutput)("id", pagesDeployment.id);
     (0, import_core.setOutput)("url", pagesDeployment.url);
     (0, import_core.setOutput)("environment", pagesDeployment.environment);
-    (0, import_core.setOutput)("alias", pagesDeployment.environment === "production" ? pagesDeployment.url : pagesDeployment.aliases[0]);
-    const productionEnvironment = pagesDeployment.environment === "production";
-    const environmentName = productionEnvironment ? "Production" : `Preview (${pagesDeployment.aliases[0]})`;
+    (0, import_core.setOutput)("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
+    let environmentName;
+    if (productionEnvironment) {
+      environmentName = "Production";
+    } else {
+      const url = new URL(pagesDeployment.aliases[0]);
+      environmentName = `Preview (${url.hostname.split(".")[0]})`;
+    }
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,
