@@ -87,6 +87,9 @@ try {
 
     const pagesDeployment = await createPagesDeployment();
 
+    // la la debug
+    console.log(pagesDeployment)
+
     const productionEnvironment = pagesDeployment.environment === "production";
 
     setOutput("id", pagesDeployment.id);
