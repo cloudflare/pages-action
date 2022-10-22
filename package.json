@@ -28,6 +28,7 @@
     "undici": "^5.11.0"
   },
   "devDependencies": {
+    "@types/node": "^18.11.3",
     "esbuild": "^0.15.12",
     "husky": "^8.0.1",
     "prettier": "^2.6.2",

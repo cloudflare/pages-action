@@ -2,7 +2,14 @@ import { getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
+import { env } from "process";
 import type { Deployment } from '@cloudflare/types';
+
+// TODO: Add Project to @cloudflare/types
+interface Project {
+  name: string;
+  production_branch: string; 
+}
 
 try {
   const apiToken = getInput("apiToken", { required: true });
@@ -14,6 +21,15 @@ try {
 
   const octokit = getOctokit(gitHubToken);
 
+  const getProject = async () => {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
+      { headers: { Authorization: `Bearer ${apiToken}` } }
+    );
+    const { result } = await response.json() as { result: Project };
+    return result;
+  }
+  
   const createPagesDeployment = async () => {
     // TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
     await shellac`
@@ -36,7 +52,7 @@ try {
     return deployment;
   };
 
-  const createGitHubDeployment = async () => {
+  const createGitHubDeployment = async (productionEnvironment: boolean, environment: string) => {
     const deployment = await octokit.rest.repos.createDeployment({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -44,6 +60,8 @@ try {
       auto_merge: false,
       description: "Cloudflare Pages",
       required_contexts: [],
+      environment,
+      production_environment: productionEnvironment,
     });
 
     if (deployment.status === 201) {
@@ -83,28 +101,30 @@ try {
       return;
     }
 
-    const gitHubDeployment = await createGitHubDeployment();
+    const project = await getProject();
+
+    const githubBranch = env.GITHUB_REF_NAME;
+    const productionEnvironment = githubBranch === project.production_branch;
+
+    let environmentName: string;
+    if (productionEnvironment) {
+      environmentName = "Production"
+    } else {
+      // Use the branch name
+      environmentName = `Preview (${githubBranch})`;
+    }
+
+    const gitHubDeployment = await createGitHubDeployment(productionEnvironment, environmentName);
 
     const pagesDeployment = await createPagesDeployment();
 
     // la la debug
     console.log(pagesDeployment)
 
-    const productionEnvironment = pagesDeployment.environment === "production";
-
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
     setOutput("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
-
-    let environmentName: string;
-    if (productionEnvironment) {
-      environmentName = "Production"
-    } else {
-      const url = new URL(pagesDeployment.aliases[0]);
-      // Use the branch alias (staging/walshy-fix-bug)
-      environmentName = `Preview (${url.hostname.split(".")[0]})`;
-    }
 
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({

@@ -21114,12 +21114,12 @@ var __publicField2 = (obj, key, value) => {
 var Shell = class {
   constructor(env_passthrough = ["PATH"]) {
     __publicField(this, "process");
-    const env = { PS1: "" };
+    const env2 = { PS1: "" };
     env_passthrough.forEach((key) => {
-      env[key] = process.env[key];
+      env2[key] = process.env[key];
     });
     this.process = import_child_process.default.spawn("bash", ["--noprofile", "--norc"], {
-      env,
+      env: env2,
       detached: true
     });
     this.process.stdout.setEncoding("utf8");
@@ -22059,6 +22059,7 @@ var src_default = shellac;
 
 // src/index.ts
 var import_undici = __toESM(require_undici());
+var import_process = require("process");
 try {
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
   const accountId = (0, import_core.getInput)("accountId", { required: true });
@@ -22067,6 +22068,14 @@ try {
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: false });
   const branch = (0, import_core.getInput)("branch", { required: false });
   const octokit = (0, import_github.getOctokit)(gitHubToken);
+  const getProject = async () => {
+    const response = await (0, import_undici.fetch)(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
+      { headers: { Authorization: `Bearer ${apiToken}` } }
+    );
+    const { result } = await response.json();
+    return result;
+  };
   const createPagesDeployment = async () => {
     await src_default`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
@@ -22085,14 +22094,16 @@ try {
     } = await response.json();
     return deployment;
   };
-  const createGitHubDeployment = async () => {
+  const createGitHubDeployment = async (productionEnvironment, environment) => {
     const deployment = await octokit.rest.repos.createDeployment({
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
       ref: import_github.context.ref,
       auto_merge: false,
       description: "Cloudflare Pages",
-      required_contexts: []
+      required_contexts: [],
+      environment,
+      production_environment: productionEnvironment
     });
     if (deployment.status === 201) {
       return deployment.data;
@@ -22121,21 +22132,22 @@ try {
     if (gitHubToken === "") {
       return;
     }
-    const gitHubDeployment = await createGitHubDeployment();
-    const pagesDeployment = await createPagesDeployment();
-    console.log(pagesDeployment);
-    const productionEnvironment = pagesDeployment.environment === "production";
-    (0, import_core.setOutput)("id", pagesDeployment.id);
-    (0, import_core.setOutput)("url", pagesDeployment.url);
-    (0, import_core.setOutput)("environment", pagesDeployment.environment);
-    (0, import_core.setOutput)("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
+    const project = await getProject();
+    const githubBranch = import_process.env.GITHUB_REF_NAME;
+    const productionEnvironment = githubBranch === project.production_branch;
     let environmentName;
     if (productionEnvironment) {
       environmentName = "Production";
     } else {
-      const url = new URL(pagesDeployment.aliases[0]);
-      environmentName = `Preview (${url.hostname.split(".")[0]})`;
+      environmentName = `Preview (${githubBranch})`;
     }
+    const gitHubDeployment = await createGitHubDeployment(productionEnvironment, environmentName);
+    const pagesDeployment = await createPagesDeployment();
+    console.log(pagesDeployment);
+    (0, import_core.setOutput)("id", pagesDeployment.id);
+    (0, import_core.setOutput)("url", pagesDeployment.url);
+    (0, import_core.setOutput)("environment", pagesDeployment.environment);
+    (0, import_core.setOutput)("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,
