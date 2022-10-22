@@ -22143,7 +22143,6 @@ try {
     }
     const gitHubDeployment = await createGitHubDeployment(productionEnvironment, environmentName);
     const pagesDeployment = await createPagesDeployment();
-    console.log(pagesDeployment);
     (0, import_core.setOutput)("id", pagesDeployment.id);
     (0, import_core.setOutput)("url", pagesDeployment.url);
     (0, import_core.setOutput)("environment", pagesDeployment.environment);

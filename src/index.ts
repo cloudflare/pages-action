@@ -118,9 +118,6 @@ try {
 
     const pagesDeployment = await createPagesDeployment();
 
-    // la la debug
-    console.log(pagesDeployment)
-
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
