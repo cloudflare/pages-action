@@ -3,13 +3,7 @@ import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
 import { env } from "process";
-import type { Deployment } from '@cloudflare/types';
-
-// TODO: Add Project to @cloudflare/types
-interface Project {
-  name: string;
-  production_branch: string; 
-}
+import type { Project, Deployment } from '@cloudflare/types';
 
 try {
   const apiToken = getInput("apiToken", { required: true });
@@ -121,7 +115,12 @@ try {
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
-    setOutput("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
+
+    let alias = pagesDeployment.url;
+    if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
+      alias = pagesDeployment.aliases[0];
+    }
+    setOutput("alias", alias);
 
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({

@@ -22146,7 +22146,11 @@ try {
     (0, import_core.setOutput)("id", pagesDeployment.id);
     (0, import_core.setOutput)("url", pagesDeployment.url);
     (0, import_core.setOutput)("environment", pagesDeployment.environment);
-    (0, import_core.setOutput)("alias", productionEnvironment ? pagesDeployment.url : pagesDeployment.aliases[0]);
+    let alias = pagesDeployment.url;
+    if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
+      alias = pagesDeployment.aliases[0];
+    }
+    (0, import_core.setOutput)("alias", alias);
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,

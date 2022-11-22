@@ -23,7 +23,7 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
-    "@cloudflare/types": "^6.16.10",
+    "@cloudflare/types": "^6.18.16",
     "shellac": "^0.7.2",
     "undici": "^5.11.0"
   },
