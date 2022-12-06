@@ -2,61 +2,28 @@ import { getInput, setOutput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
-
-// TODO: Confirm types
-
-interface Stage {
-  name: string;
-  started_on: null | string;
-  ended_on: null | string;
-  status: string;
-}
-
-interface Deployment {
-  id: string;
-  short_id: string;
-  project_id: string;
-  project_name: string;
-  environment: string;
-  url: string;
-  created_on: string;
-  modified_on: string;
-  latest_stage: Stage;
-  deployment_trigger: {
-    type: string;
-    metadata: {
-      branch: string;
-      commit_hash: string;
-      commit_message: string;
-      commit_dirty: boolean;
-    };
-  };
-  stages: Stage[];
-  build_config: {
-    build_command: null | string;
-    destination_dir: null | string;
-    root_dir: null | string;
-    web_analytics_tag: null | string;
-    web_analytics_token: null | string;
-    fast_builds: boolean;
-  };
-  env_vars: unknown;
-  kv_namespaces: Record<string, { namespace_id: string }>;
-  aliases: null | string[];
-  is_skipped: boolean;
-  production_branch: string;
-}
+import { env } from "process";
+import type { Project, Deployment } from '@cloudflare/types';
 
 try {
   const apiToken = getInput("apiToken", { required: true });
   const accountId = getInput("accountId", { required: true });
   const projectName = getInput("projectName", { required: true });
   const directory = getInput("directory", { required: true });
-  const gitHubToken = getInput("gitHubToken", { required: true });
+  const gitHubToken = getInput("gitHubToken", { required: false });
   const branch = getInput("branch", { required: false });
 
   const octokit = getOctokit(gitHubToken);
 
+  const getProject = async () => {
+    const response = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
+      { headers: { Authorization: `Bearer ${apiToken}` } }
+    );
+    const { result } = await response.json() as { result: Project };
+    return result;
+  }
+  
   const createPagesDeployment = async () => {
     // TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
     await shellac`
@@ -79,7 +46,7 @@ try {
     return deployment;
   };
 
-  const createGitHubDeployment = async () => {
+  const createGitHubDeployment = async (productionEnvironment: boolean, environment: string) => {
     const deployment = await octokit.rest.repos.createDeployment({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -87,6 +54,8 @@ try {
       auto_merge: false,
       description: "Cloudflare Pages",
       required_contexts: [],
+      environment,
+      production_environment: productionEnvironment,
     });
 
     if (deployment.status === 201) {
@@ -97,11 +66,13 @@ try {
   const createGitHubDeploymentStatus = async ({
     id,
     url,
+    deploymentId,
     environmentName,
     productionEnvironment,
   }: {
     id: number;
     url: string;
+    deploymentId: string;
     environmentName: string;
     productionEnvironment: boolean;
   }) => {
@@ -113,14 +84,31 @@ try {
       environment: environmentName,
       environment_url: url,
       production_environment: productionEnvironment,
-      log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${id}`,
+      log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
       description: "Cloudflare Pages",
       state: "success",
     });
   };
 
   (async () => {
-    const gitHubDeployment = await createGitHubDeployment();
+    if (gitHubToken === "") {
+      return;
+    }
+
+    const project = await getProject();
+
+    const githubBranch = env.GITHUB_REF_NAME;
+    const productionEnvironment = githubBranch === project.production_branch;
+
+    let environmentName: string;
+    if (productionEnvironment) {
+      environmentName = "Production"
+    } else {
+      // Use the branch name
+      environmentName = `Preview (${githubBranch})`;
+    }
+
+    const gitHubDeployment = await createGitHubDeployment(productionEnvironment, environmentName);
 
     const pagesDeployment = await createPagesDeployment();
 
@@ -128,16 +116,17 @@ try {
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
 
-    const url = new URL(pagesDeployment.url);
-    const productionEnvironment = pagesDeployment.environment === "production";
-    const environmentName = productionEnvironment
-      ? "Production"
-      : `Preview (${url.host.split(".")[0]})`;
+    let alias = pagesDeployment.url;
+    if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
+      alias = pagesDeployment.aliases[0];
+    }
+    setOutput("alias", alias);
 
     if (gitHubDeployment) {
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,
         url: pagesDeployment.url,
+        deploymentId: pagesDeployment.id,
         environmentName,
         productionEnvironment,
       });

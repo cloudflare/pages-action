@@ -19,5 +19,9 @@ jobs:
           directory: example
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
         id: publish
-      - name: Deployment URL
-        run: echo "${{ steps.publish.outputs.url }}"
+      - name: Outputs
+        run: |
+          echo "ID: ${{ steps.publish.outputs.id }}"
+          echo "URL: ${{ steps.publish.outputs.url }}"
+          echo "Environment: ${{ steps.publish.outputs.environment }}"
+          echo "Alias: ${{ steps.publish.outputs.alias }}"
