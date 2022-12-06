@@ -1,6 +1,6 @@
 {
   "name": "pages-action",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Publish to Cloudflare Pages",
   "main": "index.js",
   "scripts": {
