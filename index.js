@@ -22147,8 +22147,13 @@ try {
     (0, import_core.setOutput)("url", pagesDeployment.url);
     (0, import_core.setOutput)("environment", pagesDeployment.environment);
     let alias = pagesDeployment.url;
-    if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
+    if (pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
       alias = pagesDeployment.aliases[0];
+    } else if (!productionEnvironment) {
+      alias = pagesDeployment.url.replace(
+        pagesDeployment.short_id,
+        pagesDeployment.deployment_trigger.metadata.branch.toLowerCase().replace(/[^a-z\d]/g, "-")
+      );
     }
     (0, import_core.setOutput)("alias", alias);
     if (gitHubDeployment) {
