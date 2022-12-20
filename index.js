@@ -22128,10 +22128,7 @@ try {
       state: "success"
     });
   };
-  const createJobSummary = async ({
-    deployment,
-    aliasUrl
-  }) => {
+  const createJobSummary = async ({ deployment, aliasUrl }) => {
     const deployStage = deployment.stages.find((stage) => stage.name === "deploy");
     let status = "\u26A1\uFE0F  Deployment in progress...";
     if (deployStage?.status === "success") {
@@ -22139,7 +22136,8 @@ try {
     } else if (deployStage?.status === "failure") {
       status = "\u{1F6AB}  Deployment failed";
     }
-    await import_core.summary.addRaw(`
+    await import_core.summary.addRaw(
+      `
 # Deploying with Cloudflare Pages
 
 | Name                    | Result |
@@ -22148,7 +22146,8 @@ try {
 | **Status**:             | ${status} |
 | **Preview URL**:        | ${deployment.url} |
 | **Branch Preview URL**: | ${aliasUrl} |
-      `).write();
+      `
+    ).write();
   };
   (async () => {
     const project = await getProject();
