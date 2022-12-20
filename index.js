@@ -22128,6 +22128,28 @@ try {
       state: "success"
     });
   };
+  const createJobSummary = async ({
+    deployment,
+    aliasUrl
+  }) => {
+    const deployStage = deployment.stages.find((stage) => stage.name === "deploy");
+    let status = "\u26A1\uFE0F  Deployment in progress...";
+    if (deployStage?.status === "success") {
+      status = "\u2705  Deploy successful!";
+    } else if (deployStage?.status === "failure") {
+      status = "\u{1F6AB}  Deployment failed";
+    }
+    await import_core.summary.addRaw(`
+# Deploying with Cloudflare Pages
+
+| Name                    | Result |
+| ----------------------- | - |
+| **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
+| **Status**:             | ${status} |
+| **Preview URL**:        | ${deployment.url} |
+| **Branch Preview URL**: | ${aliasUrl} |
+      `).write();
+  };
   (async () => {
     const project = await getProject();
     if (!project)
@@ -22149,6 +22171,7 @@ try {
       alias = pagesDeployment.aliases[0];
     }
     (0, import_core.setOutput)("alias", alias);
+    await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
     if (gitHubDeployment) {
       const octokit = (0, import_github.getOctokit)(gitHubToken);
       await createGitHubDeploymentStatus({

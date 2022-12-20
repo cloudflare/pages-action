@@ -1,4 +1,4 @@
-import { getInput, setOutput, setFailed } from "@actions/core";
+import { getInput, setOutput, setFailed, summary } from "@actions/core";
 import type { Project, Deployment } from '@cloudflare/types';
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
@@ -92,6 +92,39 @@ try {
     });
   };
 
+  const createJobSummary = async (
+    {
+      deployment,
+      aliasUrl,
+    }:
+    {
+      deployment: Deployment;
+      aliasUrl: string;
+    }
+  ) => {
+    const deployStage = deployment.stages.find((stage) => stage.name === 'deploy');
+
+    let status = '⚡️  Deployment in progress...';
+    if (deployStage?.status === 'success') {
+      status = '✅  Deploy successful!';
+    } else if (deployStage?.status === 'failure') {
+      status = '🚫  Deployment failed';
+    }
+
+    await summary
+      .addRaw(`
+# Deploying with Cloudflare Pages
+
+| Name                    | Result |
+| ----------------------- | - |
+| **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
+| **Status**:             | ${status} |
+| **Preview URL**:        | ${deployment.url} |
+| **Branch Preview URL**: | ${aliasUrl} |
+      `)
+      .write();
+  }
+
   (async () => {
     const project = await getProject();
     if (!project) throw new Error('Unable to find pages project')
@@ -106,7 +139,7 @@ try {
       const octokit = getOctokit(gitHubToken);
       gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
     }
-        
+
     const pagesDeployment = await createPagesDeployment();
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
@@ -117,6 +150,8 @@ try {
       alias = pagesDeployment.aliases[0];
     }
     setOutput("alias", alias);
+
+    await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
 
     if (gitHubDeployment) {
       const octokit = getOctokit(gitHubToken);
