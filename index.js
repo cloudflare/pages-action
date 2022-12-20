@@ -22134,6 +22134,13 @@ try {
     aliasUrl
   }) => {
     console.log(deployment.stages);
+    const deployStage = deployment.stages.find((stage) => stage.name === "deploy");
+    let status = "\u26A1\uFE0F  Deployment in progress...";
+    if (deployStage?.status === "success") {
+      status = "\u2705  Deploy successful!";
+    } else if (deployStage?.status === "failure") {
+      status = "\u{1F6AB}  Deployment failed";
+    }
     await import_core.summary.addHeading(
       "Deploying with Cloudflare Pages"
     ).addTable([

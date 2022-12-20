@@ -105,6 +105,14 @@ try {
     }
   ) => {
     console.log(deployment.stages);
+    const deployStage = deployment.stages.find((stage) => stage.name === 'deploy');
+    
+    let status = '⚡️  Deployment in progress...';
+    if (deployStage?.status === 'success') {
+      status = '✅  Deploy successful!';
+    } else if (deployStage?.status === 'failure') {
+      status = '🚫  Deployment failed';
+    }
 
     await summary
       .addHeading(
