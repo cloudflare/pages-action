@@ -94,19 +94,16 @@ try {
 
   const createJobSummary = async (
     {
-      project,
       deployment,
       aliasUrl,
     }:
     {
-      project: Project;
       deployment: Deployment;
       aliasUrl: string;
     }
   ) => {
-    console.log(deployment.stages);
     const deployStage = deployment.stages.find((stage) => stage.name === 'deploy');
-    
+
     let status = '⚡️  Deployment in progress...';
     if (deployStage?.status === 'success') {
       status = '✅  Deploy successful!';
@@ -154,7 +151,7 @@ try {
     }
     setOutput("alias", alias);
 
-    await createJobSummary({ project, deployment: pagesDeployment, aliasUrl: alias });
+    await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
 
     if (gitHubDeployment) {
       const octokit = getOctokit(gitHubToken);
