@@ -13,7 +13,7 @@ try {
   const gitHubToken = getInput("gitHubToken", { required: false });
   const branch = getInput("branch", { required: false });
 
-  const octokit = getOctokit(gitHubToken);
+  let octokit;
 
   const getProject = async () => {
     const response = await fetch(
@@ -96,6 +96,7 @@ try {
     }
 
     const project = await getProject();
+    octokit = getOctokit(gitHubToken);
 
     const githubBranch = env.GITHUB_REF_NAME;
     const productionEnvironment = githubBranch === project.production_branch;
