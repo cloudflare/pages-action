@@ -22135,7 +22135,7 @@ try {
   }) => {
     console.log(deployment.stages);
     await import_core.summary.addHeading(
-      'Deploying with <a href="https://pages.dev" rel="nofollow"><img alt="Cloudflare Pages" src="https://user-images.githubusercontent.com/23264/106598434-9e719e00-654f-11eb-9e59-6167043cfa01.png" width="16"></a> Cloudflare Pages'
+      "Deploying with Cloudflare Pages"
     ).addTable([
       ["**Last commit:**", `\`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\``],
       ["**Status:**", ""],
