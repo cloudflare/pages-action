@@ -22067,7 +22067,7 @@ try {
   const directory = (0, import_core.getInput)("directory", { required: true });
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: false });
   const branch = (0, import_core.getInput)("branch", { required: false });
-  const octokit = (0, import_github.getOctokit)(gitHubToken);
+  let octokit;
   const getProject = async () => {
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
@@ -22133,6 +22133,7 @@ try {
       return;
     }
     const project = await getProject();
+    octokit = (0, import_github.getOctokit)(gitHubToken);
     const githubBranch = import_process.env.GITHUB_REF_NAME;
     const productionEnvironment = githubBranch === project.production_branch;
     let environmentName;
