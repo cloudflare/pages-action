@@ -1,0 +1,11 @@
+name: Tag major release (vX)
+
+on:
+  release:
+    types: [published, edited]
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Actions-R-Us/actions-tagger@latest
