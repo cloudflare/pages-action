@@ -115,15 +115,19 @@ try {
     }
 
     await summary
-      .addHeading(
-        'Deploying with Cloudflare Pages'
-      )
-      .addTable([
-        ['**Last commit:**', `\`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\``],
-        ['**Status:**', ''],
-        ['**Preview URL**:', deployment.url],
-        ['**Branch Preview URL**:', aliasUrl],
-      ])
+      .addHeading('Deploying with Cloudflare Pages')
+      // .addTable([
+      //   ['**Last commit:**', `\`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\``],
+      //   ['**Status:**', ''],
+      //   ['**Preview URL**:', deployment.url],
+      //   ['**Branch Preview URL**:', aliasUrl],
+      // ])
+      .addRaw(`
+      | **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
+      | **Status**:             | ${status} |
+      | **Preview URL**:        | ${deployment.url} |
+      | **Branch Preview URL**: | ${aliasUrl} |
+      `)
       .addLink('Preview URL', deployment.url)
       .write();
   }

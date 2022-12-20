@@ -22141,14 +22141,12 @@ try {
     } else if (deployStage?.status === "failure") {
       status = "\u{1F6AB}  Deployment failed";
     }
-    await import_core.summary.addHeading(
-      "Deploying with Cloudflare Pages"
-    ).addTable([
-      ["**Last commit:**", `\`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\``],
-      ["**Status:**", ""],
-      ["**Preview URL**:", deployment.url],
-      ["**Branch Preview URL**:", aliasUrl]
-    ]).addLink("Preview URL", deployment.url).write();
+    await import_core.summary.addHeading("Deploying with Cloudflare Pages").addRaw(`
+      | **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
+      | **Status**:             | ${status} |
+      | **Preview URL**:        | ${deployment.url} |
+      | **Branch Preview URL**: | ${aliasUrl} |
+      `).addLink("Preview URL", deployment.url).write();
   };
   (async () => {
     const project = await getProject();
