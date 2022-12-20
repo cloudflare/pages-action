@@ -62,8 +62,9 @@ If you are in a Git workspace, Wrangler will automatically pull the branch infor
 manually by adding the argument `branch: YOUR_BRANCH_NAME`.
 
 ## Outputs
-| Name          | Description                          |
-| ------------- | -------------------------------------|
-| `id`          | The ID of the pages deployment       |
-| `url`         | The URL of the pages deployment      |
-| `environment` | The environment that was deployed to |
+| Name          | Description                                         |
+| ------------- | --------------------------------------------------- |
+| `id`          | The ID of the pages deployment                      |
+| `url`         | The URL of the pages deployment                     |
+| `alias`       | The alias if it exists otherwise the deployment URL |
+| `environment` | The environment that was deployed to                |
