@@ -146,8 +146,15 @@ try {
     setOutput("environment", pagesDeployment.environment);
 
     let alias = pagesDeployment.url;
-    if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
+    if (pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
       alias = pagesDeployment.aliases[0];
+    } else if (!productionEnvironment) {
+      alias = pagesDeployment.url.replace(
+        pagesDeployment.short_id,
+        pagesDeployment.deployment_trigger.metadata.branch
+          .toLowerCase()
+          .replace(/[^a-z\d]/g, "-")
+      );
     }
     setOutput("alias", alias);
 
