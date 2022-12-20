@@ -146,6 +146,8 @@ try {
     }
     setOutput("alias", alias);
 
+    await createJobSummary({ project, deployment: pagesDeployment, aliasUrl: alias });
+
     if (gitHubDeployment) {
       const octokit = getOctokit(gitHubToken);
 

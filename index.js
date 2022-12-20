@@ -22164,6 +22164,7 @@ try {
       alias = pagesDeployment.aliases[0];
     }
     (0, import_core.setOutput)("alias", alias);
+    await createJobSummary({ project, deployment: pagesDeployment, aliasUrl: alias });
     if (gitHubDeployment) {
       const octokit = (0, import_github.getOctokit)(gitHubToken);
       await createGitHubDeploymentStatus({
