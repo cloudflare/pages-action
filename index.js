@@ -22144,6 +22144,8 @@ try {
     await import_core.summary.addRaw(`
 # Deploying with Cloudflare Pages
 
+|   |   |
+| - | - |
 | **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
 | **Status**:             | ${status} |
 | **Preview URL**:        | ${deployment.url} |
