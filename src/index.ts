@@ -1,9 +1,11 @@
 import { getInput, setOutput, setFailed } from "@actions/core";
+import type { Project, Deployment } from '@cloudflare/types';
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
 import { env } from "process";
-import type { Project, Deployment } from '@cloudflare/types';
+
+type Octokit = ReturnType<typeof getOctokit>;
 
 try {
   const apiToken = getInput("apiToken", { required: true });
@@ -13,14 +15,12 @@ try {
   const gitHubToken = getInput("gitHubToken", { required: false });
   const branch = getInput("branch", { required: false });
 
-  let octokit;
-
   const getProject = async () => {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
       { headers: { Authorization: `Bearer ${apiToken}` } }
     );
-    const { result } = await response.json() as { result: Project };
+    const { result } = await response.json() as { result: Project | null };
     return result;
   }
   
@@ -46,7 +46,7 @@ try {
     return deployment;
   };
 
-  const createGitHubDeployment = async (productionEnvironment: boolean, environment: string) => {
+  const createGitHubDeployment = async (octokit: Octokit, productionEnvironment: boolean, environment: string) => {
     const deployment = await octokit.rest.repos.createDeployment({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -69,7 +69,9 @@ try {
     deploymentId,
     environmentName,
     productionEnvironment,
+    octokit,
   }: {
+    octokit: Octokit,
     id: number;
     url: string;
     deploymentId: string;
@@ -91,28 +93,21 @@ try {
   };
 
   (async () => {
-    if (gitHubToken === "") {
-      return;
-    }
-
     const project = await getProject();
-    octokit = getOctokit(gitHubToken);
+    if (!project) throw new Error('Unable to find pages project')
 
     const githubBranch = env.GITHUB_REF_NAME;
     const productionEnvironment = githubBranch === project.production_branch;
+    const environmentName = productionEnvironment ? "Production" : `Preview: (${githubBranch})`;
 
-    let environmentName: string;
-    if (productionEnvironment) {
-      environmentName = "Production"
-    } else {
-      // Use the branch name
-      environmentName = `Preview (${githubBranch})`;
+    let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
+
+    if (gitHubToken && gitHubToken.length) {
+      const octokit = getOctokit(gitHubToken);
+      gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
     }
-
-    const gitHubDeployment = await createGitHubDeployment(productionEnvironment, environmentName);
-
+        
     const pagesDeployment = await createPagesDeployment();
-
     setOutput("id", pagesDeployment.id);
     setOutput("url", pagesDeployment.url);
     setOutput("environment", pagesDeployment.environment);
@@ -124,12 +119,15 @@ try {
     setOutput("alias", alias);
 
     if (gitHubDeployment) {
+      const octokit = getOctokit(gitHubToken);
+
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,
         url: pagesDeployment.url,
         deploymentId: pagesDeployment.id,
         environmentName,
         productionEnvironment,
+        octokit
       });
     }
   })();
