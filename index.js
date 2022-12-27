@@ -22125,7 +22125,8 @@ try {
       production_environment: productionEnvironment,
       log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
       description: "Cloudflare Pages",
-      state: "success"
+      state: "success",
+      auto_inactive: false
     });
   };
   const createJobSummary = async ({ deployment, aliasUrl }) => {
