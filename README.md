@@ -65,6 +65,10 @@ The branch name is used by Cloudflare Pages to determine if the deployment is pr
 If you are in a Git workspace, Wrangler will automatically pull the branch information for you. You can override this
 manually by adding the argument `branch: YOUR_BRANCH_NAME`.
 
+### Specifying a working directory
+
+By default Wrangler will run in the root package directory. If your app lives in a monorepo and you want to run Wrangler from its directory, add `workingDirectory: YOUR_PACKAGE_DIRECTORY`.
+
 ## Outputs
 
 | Name          | Description                                         |

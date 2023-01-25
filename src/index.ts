@@ -4,6 +4,7 @@ import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
 import { fetch } from "undici";
 import { env } from "process";
+import path from "node:path";
 
 type Octokit = ReturnType<typeof getOctokit>;
 
@@ -14,6 +15,7 @@ try {
 	const directory = getInput("directory", { required: true });
 	const gitHubToken = getInput("gitHubToken", { required: false });
 	const branch = getInput("branch", { required: false });
+	const workingDirectory = getInput("workingDirectory", { required: false });
 
 	const getProject = async () => {
 		const response = await fetch(
@@ -26,7 +28,7 @@ try {
 
 	const createPagesDeployment = async () => {
 		// TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
-		await shellac`
+		await shellac.in(path.join(process.cwd(), workingDirectory))`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
     if ${accountId} {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
