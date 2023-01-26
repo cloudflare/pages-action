@@ -126,7 +126,7 @@ try {
 
 		const githubBranch = env.GITHUB_REF_NAME;
 		const productionEnvironment = githubBranch === project.production_branch;
-		const environmentName = productionEnvironment ? "Production" : `Preview: (${githubBranch})`;
+		const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
 
 		let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
 

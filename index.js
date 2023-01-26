@@ -22157,7 +22157,7 @@ try {
       throw new Error("Unable to find pages project");
     const githubBranch = import_process.env.GITHUB_REF_NAME;
     const productionEnvironment = githubBranch === project.production_branch;
-    const environmentName = productionEnvironment ? "Production" : `Preview: (${githubBranch})`;
+    const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
     let gitHubDeployment;
     if (gitHubToken && gitHubToken.length) {
       const octokit = (0, import_github.getOctokit)(gitHubToken);
