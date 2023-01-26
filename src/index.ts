@@ -52,7 +52,7 @@ try {
 		const deployment = await octokit.rest.repos.createDeployment({
 			owner: context.repo.owner,
 			repo: context.repo.repo,
-			ref: context.ref,
+			ref: branch,
 			auto_merge: false,
 			description: "Cloudflare Pages",
 			required_contexts: [],
@@ -124,8 +124,7 @@ try {
 		const project = await getProject();
 		if (!project) throw new Error("Unable to find pages project");
 
-		const githubBranch = env.GITHUB_REF_NAME;
-		const productionEnvironment = githubBranch === project.production_branch;
+		const productionEnvironment = branch === project.production_branch;
 		const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
 
 		let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
