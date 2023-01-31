@@ -33,6 +33,8 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              directory: YOUR_ASSET_DIRECTORY
              # Optional: Enable this if you want to have GitHub Deployments triggered
              gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+             # Optional: Set a branch name to override the current branch name
+             branch: YOUR_BRANCH_NAME
    ```
 
 1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_ASSET_DIRECTORY` with the appropriate values to your Pages project.
@@ -64,6 +66,8 @@ The branch name is used by Cloudflare Pages to determine if the deployment is pr
 
 If you are in a Git workspace, Wrangler will automatically pull the branch information for you. You can override this
 manually by adding the argument `branch: YOUR_BRANCH_NAME`.
+
+When using a branch other than `main` for your production branch, you must set `branch: main` in your workflow to ensure that the deployment is published to the production environment.
 
 ### Specifying a working directory
 
