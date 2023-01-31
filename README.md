@@ -57,7 +57,7 @@ To generate an API token:
 6. Under Permissions, select Account, Cloudflare Pages and Edit:
 7. Select Continue to summary > Create Token.
 
-More information can be found on [our guide for making Direct Upload deployments with continous integration](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/#use-github-actions).
+More information can be found on [our guide for making Direct Upload deployments with continuous integration](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/#use-github-actions).
 
 ### Specifying a branch
 
