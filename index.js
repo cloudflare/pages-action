@@ -21114,12 +21114,12 @@ var __publicField2 = (obj, key, value) => {
 var Shell = class {
   constructor(env_passthrough = ["PATH"]) {
     __publicField(this, "process");
-    const env2 = { PS1: "" };
+    const env = { PS1: "" };
     env_passthrough.forEach((key) => {
-      env2[key] = process.env[key];
+      env[key] = process.env[key];
     });
     this.process = import_child_process.default.spawn("bash", ["--noprofile", "--norc"], {
-      env: env2,
+      env,
       detached: true
     });
     this.process.stdout.setEncoding("utf8");
@@ -22059,7 +22059,6 @@ var src_default = shellac;
 
 // src/index.ts
 var import_undici = __toESM(require_undici());
-var import_process = require("process");
 var import_node_path = __toESM(require("path"));
 try {
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
@@ -22099,7 +22098,7 @@ try {
     const deployment = await octokit.rest.repos.createDeployment({
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
-      ref: import_github.context.ref,
+      ref: branch,
       auto_merge: false,
       description: "Cloudflare Pages",
       required_contexts: [],
@@ -22155,8 +22154,7 @@ try {
     const project = await getProject();
     if (!project)
       throw new Error("Unable to find pages project");
-    const githubBranch = import_process.env.GITHUB_REF_NAME;
-    const productionEnvironment = githubBranch === project.production_branch;
+    const productionEnvironment = branch === project.production_branch;
     const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
     let gitHubDeployment;
     if (gitHubToken && gitHubToken.length) {
