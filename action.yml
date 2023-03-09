@@ -22,7 +22,6 @@ inputs:
   branch:
     description: "The name of the branch you want to deploy to"
     required: false
-    default: "${{ github.head_ref || github.ref_name }}"
   workingDirectory:
     description: "The working directory in which to run Wrangler"
     required: false
