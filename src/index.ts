@@ -91,6 +91,7 @@ try {
 			log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
 			description: "Cloudflare Pages",
 			state: "success",
+			auto_inactive: false
 		});
 	};
 
