@@ -25,6 +25,9 @@ inputs:
   workingDirectory:
     description: "The working directory in which to run Wrangler"
     required: false
+  wranglerVersion:
+    description: "The version of Wrangler to use"
+    required: false
 runs:
   using: "node16"
   main: "index.js"

@@ -16,6 +16,9 @@ try {
 	const gitHubToken = getInput("gitHubToken", { required: false });
 	const branch = getInput("branch", { required: false });
 	const workingDirectory = getInput("workingDirectory", { required: false });
+	const wranglerVersion = getInput("wranglerVersion", { required: false })
+		? getInput("wranglerVersion", { required: false })
+		: "2";
 
 	const getProject = async () => {
 		const response = await fetch(
@@ -34,7 +37,7 @@ try {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
   
-    $$ npx wrangler@2 pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
     `;
 
 		const response = await fetch(
@@ -93,7 +96,7 @@ try {
 			log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
 			description: "Cloudflare Pages",
 			state: "success",
-			auto_inactive: false
+			auto_inactive: false,
 		});
 	};
 
