@@ -93,7 +93,7 @@ try {
 			log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
 			description: "Cloudflare Pages",
 			state: "success",
-			auto_inactive: false
+			auto_inactive: false,
 		});
 	};
 
@@ -127,7 +127,7 @@ try {
 		const project = await getProject();
 		if (!project) throw new Error("Unable to find pages project");
 
-		const productionEnvironment = githubBranch === project.production_branch;
+		const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
 		const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
 
 		let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
