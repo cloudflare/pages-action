@@ -22069,7 +22069,7 @@ try {
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: false });
   const branch = (0, import_core.getInput)("branch", { required: false });
   const workingDirectory = (0, import_core.getInput)("workingDirectory", { required: false });
-  const wranglerVersion = (0, import_core.getInput)("wranglerVersion", { required: false }) ? (0, import_core.getInput)("wranglerVersion", { required: false }) : "2";
+  const wranglerVersion = (0, import_core.getInput)("wranglerVersion", { required: false });
   const getProject = async () => {
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
