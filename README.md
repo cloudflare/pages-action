@@ -33,6 +33,13 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              directory: YOUR_ASSET_DIRECTORY
              # Optional: Enable this if you want to have GitHub Deployments triggered
              gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+             # Optional: Switch what branch you are publishing to.
+             # By default this will be the branch which triggered this workflow
+             branch: main
+             # Optional: Change the working directory
+						 workingDirectory: my-site
+						 # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+						 wranglerVersion: '3'
    ```
 
 1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_ASSET_DIRECTORY` with the appropriate values to your Pages project.
@@ -68,6 +75,22 @@ manually by adding the argument `branch: YOUR_BRANCH_NAME`.
 ### Specifying a working directory
 
 By default Wrangler will run in the root package directory. If your app lives in a monorepo and you want to run Wrangler from its directory, add `workingDirectory: YOUR_PACKAGE_DIRECTORY`.
+
+### Wrangler v3
+
+You can use the newly released [Wrangler v3](https://blog.cloudflare.com/wrangler3/) with the `wranglerVersion` property.
+
+```yaml
+  - name: Publish to Cloudflare Pages
+    uses: cloudflare/pages-action@v1
+    with:
+      apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      accountId: YOUR_ACCOUNT_ID
+      projectName: YOUR_PROJECT_NAME
+      directory: YOUR_ASSET_DIRECTORY
+      # Enable Wrangler v3
+      wranglerVersion: '3'
+```
 
 ## Outputs
 
