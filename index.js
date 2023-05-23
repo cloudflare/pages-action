@@ -22075,7 +22075,16 @@ try {
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
       { headers: { Authorization: `Bearer ${apiToken}` } }
     );
+    if (response.status !== 200) {
+      console.error(`Cloudflare API returned non-200: ${response.status}`);
+      const json = await response.text();
+      console.error(`API returned: ${json}`);
+      throw new Error("Failed to get Pages project, API returned non-200");
+    }
     const { result } = await response.json();
+    if (result === null) {
+      throw new Error("Failed to get Pages project, project does not exist. Check the project name or create it!");
+    }
     return result;
   };
   const createPagesDeployment = async () => {
@@ -22156,8 +22165,6 @@ try {
   };
   (async () => {
     const project = await getProject();
-    if (!project)
-      throw new Error("Unable to find pages project");
     const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
     const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
     let gitHubDeployment;
