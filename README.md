@@ -37,9 +37,9 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              # By default this will be the branch which triggered this workflow
              branch: main
              # Optional: Change the working directory
-						 workingDirectory: my-site
-						 # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
-						 wranglerVersion: '3'
+             workingDirectory: my-site
+             # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+             wranglerVersion: '3'
    ```
 
 1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_ASSET_DIRECTORY` with the appropriate values to your Pages project.
