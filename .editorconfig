@@ -6,5 +6,5 @@ end_of_line = lf
 indent_style = tab
 tab_width = 2
 
-[*.yml]
+[*.{yml,md}]
 indent_style = space
