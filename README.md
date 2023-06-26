@@ -30,7 +30,7 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
              accountId: YOUR_ACCOUNT_ID
              projectName: YOUR_PROJECT_NAME
-             directory: YOUR_ASSET_DIRECTORY
+             directory: YOUR_BUILD_OUTPUT_DIRECTORY
              # Optional: Enable this if you want to have GitHub Deployments triggered
              gitHubToken: ${{ secrets.GITHUB_TOKEN }}
              # Optional: Switch what branch you are publishing to.
@@ -42,7 +42,7 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              wranglerVersion: '3'
    ```
 
-1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_ASSET_DIRECTORY` with the appropriate values to your Pages project.
+1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_BUILD_OUTPUT_DIRECTORY` with the appropriate values to your Pages project.
 
 ### Get account ID
 
@@ -87,7 +87,7 @@ You can use the newly released [Wrangler v3](https://blog.cloudflare.com/wrangle
       apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       accountId: YOUR_ACCOUNT_ID
       projectName: YOUR_PROJECT_NAME
-      directory: YOUR_ASSET_DIRECTORY
+      directory: YOUR_BUILD_OUTPUT_DIRECTORY
       # Enable Wrangler v3
       wranglerVersion: '3'
 ```
