@@ -29,6 +29,10 @@ inputs:
     description: "The version of Wrangler to use"
     required: false
     default: "2"
+  includeLogs:
+    description: "Include logs from failed deployments in the deployment summary"
+    required: false
+    default: "false"
 runs:
   using: "node16"
   main: "index.js"
