@@ -29,6 +29,9 @@ inputs:
     description: "The version of Wrangler to use"
     required: false
     default: "2"
+  environmentName:
+    description: "Override the environment name to use"
+    required: false
 runs:
   using: "node16"
   main: "index.js"

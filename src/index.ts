@@ -17,6 +17,7 @@ try {
 	const branch = getInput("branch", { required: false });
 	const workingDirectory = getInput("workingDirectory", { required: false });
 	const wranglerVersion = getInput("wranglerVersion", { required: false });
+	const environmentName = getInput("environmentName", { required: false });
 
 	const getProject = async () => {
 		const response = await fetch(
@@ -139,13 +140,15 @@ try {
 		const project = await getProject();
 
 		const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
-		const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
+		const cfEnvironmentName = environmentName
+			? environmentName
+			: `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
 
 		let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
 
 		if (gitHubToken && gitHubToken.length) {
 			const octokit = getOctokit(gitHubToken);
-			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
+			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, cfEnvironmentName);
 		}
 
 		const pagesDeployment = await createPagesDeployment();
@@ -168,7 +171,7 @@ try {
 				id: gitHubDeployment.id,
 				url: pagesDeployment.url,
 				deploymentId: pagesDeployment.id,
-				environmentName,
+				environmentName: cfEnvironmentName,
 				productionEnvironment,
 				octokit,
 			});

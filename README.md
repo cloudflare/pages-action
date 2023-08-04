@@ -39,7 +39,7 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              # Optional: Change the working directory
              workingDirectory: my-site
              # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
-             wranglerVersion: '3'
+             wranglerVersion: "3"
    ```
 
 1. Replace `YOUR_ACCOUNT_ID`, `YOUR_PROJECT_NAME` and `YOUR_BUILD_OUTPUT_DIRECTORY` with the appropriate values to your Pages project.
@@ -81,15 +81,15 @@ By default Wrangler will run in the root package directory. If your app lives in
 You can use the newly released [Wrangler v3](https://blog.cloudflare.com/wrangler3/) with the `wranglerVersion` property.
 
 ```yaml
-  - name: Publish to Cloudflare Pages
-    uses: cloudflare/pages-action@v1
-    with:
-      apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      accountId: YOUR_ACCOUNT_ID
-      projectName: YOUR_PROJECT_NAME
-      directory: YOUR_BUILD_OUTPUT_DIRECTORY
-      # Enable Wrangler v3
-      wranglerVersion: '3'
+- name: Publish to Cloudflare Pages
+  uses: cloudflare/pages-action@v1
+  with:
+    apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    accountId: YOUR_ACCOUNT_ID
+    projectName: YOUR_PROJECT_NAME
+    directory: YOUR_BUILD_OUTPUT_DIRECTORY
+    # Enable Wrangler v3
+    wranglerVersion: "3"
 ```
 
 ## Outputs
