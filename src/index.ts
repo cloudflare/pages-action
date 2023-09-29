@@ -46,7 +46,11 @@ try {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
   
-    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    if (wranglerVersion < 3) {
+      $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    } else {
+      $$ npx wrangler@${wranglerVersion} pages deploy "${directory}" --project-name="${projectName}" --branch="${branch}"
+    }
     `;
 
 		const response = await fetch(
