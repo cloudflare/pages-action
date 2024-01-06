@@ -5,6 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "npx esbuild src/index.ts --bundle --platform=node --target=es2021 --outfile=index.js",
+		"dev": "npx esbuild src/index.ts --bundle --platform=node --target=es2021 --outfile=index.js --watch",
 		"prepare": "husky install",
 		"prettify": "prettier . --write --ignore-unknown"
 	},
