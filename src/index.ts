@@ -66,7 +66,7 @@ try {
 		const deployment = await octokit.rest.repos.createDeployment({
 			owner: context.repo.owner,
 			repo: context.repo.repo,
-			ref: githubBranch || context.ref,
+			ref: context.ref,
 			auto_merge: false,
 			description: "Cloudflare Pages",
 			required_contexts: [],
