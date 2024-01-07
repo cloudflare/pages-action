@@ -63,6 +63,10 @@ try {
 	const githubBranch = env.GITHUB_HEAD_REF || env.GITHUB_REF_NAME;
 
 	const createGitHubDeployment = async (octokit: Octokit, productionEnvironment: boolean, environment: string) => {
+		console.log("creating github deployment");
+		console.log("context repo owner", context.repo.owner);
+		console.log("context repo repo", context.repo.repo);
+		console.log("context sha", context.sha);
 		const deployment = await octokit.rest.repos.createDeployment({
 			owner: context.repo.owner,
 			repo: context.repo.repo,
@@ -146,6 +150,7 @@ try {
 		if (gitHubToken && gitHubToken.length) {
 			const octokit = getOctokit(gitHubToken);
 			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
+			console.log("github deployment", gitHubDeployment);
 		}
 
 		const pagesDeployment = await createPagesDeployment();
