@@ -22113,7 +22113,7 @@ try {
     const deployment = await octokit.rest.repos.createDeployment({
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
-      ref: import_github.context.sha,
+      ref: import_github.context.payload.pull_request?.head.sha,
       auto_merge: false,
       description: "Cloudflare Pages",
       required_contexts: [],
