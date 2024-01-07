@@ -64,15 +64,17 @@ try {
 
 	const createGitHubDeployment = async (octokit: Octokit, productionEnvironment: boolean, environment: string) => {
 		const deployment = await octokit.rest.repos.createDeployment({
-			owner: context.repo.owner,
-			repo: context.repo.repo,
-			ref: context.ref,
+			owner: context.payload.pull_request?.head.repo.owner.login || context.repo.owner,
+			repo: context.payload.pull_request?.head.repo.name || context.repo.repo,
+			ref: context.payload.pull_request?.head.ref || context.ref,
 			auto_merge: false,
 			description: "Cloudflare Pages",
 			required_contexts: [],
 			environment,
 			production_environment: productionEnvironment,
 		});
+
+		console.log(deployment);
 
 		if (deployment.status === 201) {
 			return deployment.data;
@@ -95,8 +97,8 @@ try {
 		productionEnvironment: boolean;
 	}) => {
 		await octokit.rest.repos.createDeploymentStatus({
-			owner: context.repo.owner,
-			repo: context.repo.repo,
+			owner: context.payload.pull_request?.head.repo.owner.login || context.repo.owner,
+			repo: context.payload.pull_request?.head.repo.name || context.repo.repo,
 			deployment_id: id,
 			// @ts-ignore
 			environment: environmentName,
