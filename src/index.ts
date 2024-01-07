@@ -39,7 +39,6 @@ try {
 	};
 
 	const createPagesDeployment = async () => {
-		// TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
 		await shellac.in(path.join(process.cwd(), workingDirectory))`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
     if ${accountId} {
@@ -146,7 +145,6 @@ try {
 		if (gitHubToken && gitHubToken.length) {
 			const octokit = getOctokit(gitHubToken);
 			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
-			console.log("github deployment", gitHubDeployment);
 		}
 
 		const pagesDeployment = await createPagesDeployment();
