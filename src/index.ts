@@ -63,9 +63,6 @@ try {
 	const githubBranch = env.GITHUB_HEAD_REF || env.GITHUB_REF_NAME;
 
 	const createGitHubDeployment = async (octokit: Octokit, productionEnvironment: boolean, environment: string) => {
-		console.log("--------");
-		console.log("github context", JSON.stringify(context, null, 2));
-		console.log("--------");
 		const deployment = await octokit.rest.repos.createDeployment({
 			owner: context.repo.owner,
 			repo: context.repo.repo,

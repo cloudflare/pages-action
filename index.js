@@ -22107,9 +22107,6 @@ try {
   };
   const githubBranch = import_process.env.GITHUB_HEAD_REF || import_process.env.GITHUB_REF_NAME;
   const createGitHubDeployment = async (octokit, productionEnvironment, environment) => {
-    console.log("--------");
-    console.log("github context", JSON.stringify(import_github.context, null, 2));
-    console.log("--------");
     const deployment = await octokit.rest.repos.createDeployment({
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
@@ -22174,7 +22171,6 @@ try {
     if (gitHubToken && gitHubToken.length) {
       const octokit = (0, import_github.getOctokit)(gitHubToken);
       gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
-      console.log("github deployment", gitHubDeployment);
     }
     const pagesDeployment = await createPagesDeployment();
     (0, import_core.setOutput)("id", pagesDeployment.id);
