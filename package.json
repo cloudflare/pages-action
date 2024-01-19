@@ -1,7 +1,7 @@
 {
-	"name": "pages-action",
-	"version": "1.5.0",
-	"description": "Publish to Cloudflare Pages",
+	"name": "cloudflare-pages-action",
+	"version": "1.0.0",
+	"description": "Publish to Cloudflare Pages using explicit GitHub Environments",
 	"main": "index.js",
 	"scripts": {
 		"build": "npx esbuild src/index.ts --bundle --platform=node --target=es2021 --outfile=index.js",
@@ -10,7 +10,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/cloudflare/pages-action.git"
+		"url": "git+https://github.com/nader-eloshaiker/cloudflare-pages-action.git"
 	},
 	"keywords": [
 		"Cloudflare Pages",
@@ -18,9 +18,9 @@
 	],
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/cloudflare/pages-action/issues"
+		"url": "https://github.com/nader-eloshaiker/cloudflare-pages-action/issues"
 	},
-	"homepage": "https://github.com/cloudflare/pages-action#readme",
+	"homepage": "https://github.com/nader-eloshaiker/cloudflare-pages-action#readme",
 	"dependencies": {
 		"@actions/core": "^1.10.0",
 		"@actions/github": "^5.1.1",

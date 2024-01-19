@@ -1,5 +1,5 @@
-name: "Cloudflare Pages GitHub Action"
-description: "Publish to Cloudflare Pages"
+name: "Cloudflare Pages GitHub Action with GitHub Environments"
+description: "Publish to Cloudflare Pages using explicit GitHub Environments"
 branding:
   icon: "upload-cloud"
   color: "orange"

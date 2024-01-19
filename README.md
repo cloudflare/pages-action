@@ -1,5 +1,10 @@
 # Cloudflare Pages GitHub Action
 
+## FORK NOTE
+
+This is a fork of the official CloudFlare Pages Action and allows the user to explicitly set the GitHub Environment when publishing
+A PR is present requesting with an equivalent change since August 2023 and an issue against this requirement.
+
 GitHub Action for creating Cloudflare Pages deployments, using the new [Direct Upload](https://developers.cloudflare.com/pages/platform/direct-upload/) feature and [Wrangler](https://developers.cloudflare.com/pages/platform/direct-upload/#wrangler-cli) integration.
 
 ## Usage
