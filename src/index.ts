@@ -7,6 +7,10 @@ import { env } from "process";
 import path from "node:path";
 
 type Octokit = ReturnType<typeof getOctokit>;
+enum CloudflarePagesEnvironment {
+	PRODUCTION = "Production",
+	PREVIEW = "Preview",
+}
 
 try {
 	const apiToken = getInput("apiToken", { required: true });
@@ -15,6 +19,7 @@ try {
 	const directory = getInput("directory", { required: true });
 	const gitHubToken = getInput("gitHubToken", { required: false });
 	const branch = getInput("branch", { required: false });
+	const environmentName = getInput("environmentName", { required: false });
 	const workingDirectory = getInput("workingDirectory", { required: false });
 	const wranglerVersion = getInput("wranglerVersion", { required: false });
 
@@ -139,13 +144,16 @@ try {
 		const project = await getProject();
 
 		const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
-		const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
+		const githubEnvironmentName = environmentName
+			? environmentName
+			: `${projectName} (${
+					productionEnvironment ? CloudflarePagesEnvironment.PRODUCTION : CloudflarePagesEnvironment.PREVIEW})`;
 
 		let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
 
 		if (gitHubToken && gitHubToken.length) {
 			const octokit = getOctokit(gitHubToken);
-			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
+			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, githubEnvironmentName);
 		}
 
 		const pagesDeployment = await createPagesDeployment();
@@ -168,7 +176,7 @@ try {
 				id: gitHubDeployment.id,
 				url: pagesDeployment.url,
 				deploymentId: pagesDeployment.id,
-				environmentName,
+				environmentName: githubEnvironmentName,
 				productionEnvironment,
 				octokit,
 			});

@@ -37,6 +37,8 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
              # By default this will be the branch which triggered this workflow
              branch: main
              # Optional: Change the working directory
+             environmentName: projectName (Production)
+             # Optional: The name of the GitHub environment you want to associate with the deployment
              workingDirectory: my-site
              # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
              wranglerVersion: '3'
