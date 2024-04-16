@@ -25,7 +25,10 @@ jobs:
             end
             ')
           echo "$result"
-          echo "summary=$result" >> "$GITHUB_OUTPUT"
+          { echo 'summary<<EOF'
+            echo "$result"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
         env:
           PROJECT_NAME: github-actions-example
           PRODUCTION_BRANCH: develop
