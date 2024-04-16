@@ -97,12 +97,16 @@ jobs:
             const output = `\n#### Cloudflare Pages set production branch ⚙️\`${{ steps.set-production-branch.outcome }}\`\n
             #### Cloudflare Pages Deploy 📖\`${{ steps.publish.outcome }}\`\n
 
-            🔗 [${process.env.PUBLISH_CFPAGES_URL}](${process.env.PUBLISH_CFPAGES_URL})\n
+            🔗 Preview URL: [${process.env.PUBLISH_CFPAGES_URL}](${process.env.PUBLISH_CFPAGES_URL})\n
 
             ${process.env.PUBLISH_CFPAGES_ALIAS ?
-              `📌 Alias URL: [${process.env.PUBLISH_CFPAGES_ALIAS}](${process.env.PUBLISH_CFPAGES_ALIAS})\n`:""
+              `📌 Branch Preview URL: [${process.env.PUBLISH_CFPAGES_ALIAS}](${process.env.PUBLISH_CFPAGES_ALIAS})\n`:""
             }
-
+            commit hash: ${{ github.event.head_commit.id }}\n
+            commit message: ${{ github.event.head_commit.message}}\n
+            commit author: ${{ github.event.head_commit.author.name }}\n
+            commit date: ${{ github.event.head_commit.timestamp }}\n
+            
             <details><summary>Deploying with Cloudflare Pages</summary>
 
             \`\`\`deploy\n
