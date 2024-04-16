@@ -12,16 +12,16 @@ jobs:
         uses: actions/checkout@v4
       - name: set production branch
         run: |
-          result=$(curl --request PATCH \
-            --url https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/github-actions-example \
-            --header 'Content-Type: application/json' \
-            --header 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
-            --data '{ "production_branch": "develop" }')
+          result=$(curl -sS -X PATCH \
+            -H 'Content-Type: application/json' \
+            -H 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
+            -d '{ "production_branch": "develop" }'
+            https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/github-actions-example)
           result=$(echo "$result" | jq  -r '
             if .success == true then
-              "Production Branchの変更に成功しました。\n\(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました"
+              "Cloudflare Pages Production Branchの変更に成功しました。\n\(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました"
             else
-              "Production Branchの変更に失敗しました。\nエラーコード: \(.errors[].code) \nエラーメッセージ: \(.errors[].message)" 
+              "Cloudflare Pages Production Branchの変更に失敗しました。\nエラーコード: \(.errors[].code) \nエラーメッセージ: \(.errors[].message)" 
             end
             ')
           echo "$result"
