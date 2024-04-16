@@ -13,8 +13,10 @@ jobs:
       - name: Publish to Cloudflare Pages
         uses: ./
         with:
+          # Explicit branch name needed because of: https://github.com/cloudflare/pages-action/issues/97
+          branch: ${{ github.head_ref || github.ref_name }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 468cce80dfb431f3a4058e6dc6031a44
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: github-actions-example
           directory: example
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
