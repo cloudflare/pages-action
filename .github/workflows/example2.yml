@@ -46,7 +46,7 @@ jobs:
         id: publish
       - name: generate alias url
         id: generate-alias-url
-        if: ${{ github.head_ref || github.ref_name }}!=${{ env.PRODUCTION_BRANCH }}
+        if: "${{ github.head_ref || github.ref_name }}" != "${{ env.PRODUCTION_BRANCH }}"
         env:
           BRANCH: ${{ github.ref_name }}
           PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
