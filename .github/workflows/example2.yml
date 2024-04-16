@@ -43,20 +43,44 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
         id: publish
-      - uses: schnerring/cloudflare-pages-branch-alias-action@v1
-        id: pages-branch-alias
-        with:
-          # git-branch input
-          git-branch: ${{ github.ref_name }}
       - name: generate alias url
         id: generate-alias-url
         if: steps.pages-branch-alias.outputs.branch-alias != 'develop'
         env:
-          ALIAS: ${{ steps.pages-branch-alias.outputs.branch-alias }}
+          BRANCH: ${{ github.ref_name }}
           PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
         run: |
           [[ $PUBLISH_CFPAGES_URL =~ (https?://)?([a-zA-Z0-9-]+)\.pages\.dev ]]
-          new_url="https://${ALIAS}.${BASH_REMATCH[2]}.pages.dev"
+          invalid_chars_regex='[^a-z0-9-]'
+          max_alias_length=28
+          alphanum="abcdefghijklmnopqrstuvwxyz0123456789"
+
+          function generate_branch_alias() {
+              local branch="$1"
+              local normalised=$(echo "$branch" | tr '[:upper:]' '[:lower:]' | sed -e "s/$invalid_chars_regex/-/g" -e "s/^-//" -e "s/-\$//")
+
+              if [ -z "$normalised" ]; then
+                  echo "branch-$(rand_alphanum 10)"
+                  return
+              fi
+
+              if [ ${#normalised} -gt $max_alias_length ]; then
+                  echo "${normalised:0:$max_alias_length}"
+                  return
+              fi
+
+              echo "$normalised"
+          }
+
+          function rand_alphanum() {
+              local length="$1"
+              local alias=""
+
+              for ((i=0; i<$length; i++)); do
+                  alias+="${alphanum:RANDOM%${#alphanum}:1}"
+              done
+          }
+          new_url="https://$(generate_branch_alias "${BRANCH}").${BASH_REMATCH[2]}.pages.dev"
           echo $new_url
           echo alias-url=$new_url >> $GITHUB_OUTPUT
       - name: Create Job Summary
