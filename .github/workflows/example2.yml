@@ -17,9 +17,14 @@ jobs:
             --header 'Content-Type: application/json' \
             --header 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
             --data '{ "production_branch": "develop" }')
-          result=$(echo "$result" | jq  -r 'if .success == true then \
-            "Production Branchの変更に成功しました。\n\(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました" else \
-            "Production Branchの変更に失敗しました。\nエラーコード: \(.errors[].code) \nエラーメッセージ: \(.errors[].message)" end')
+          result=$(echo "$result" | jq  -r '
+            if .success == true then
+              "Production Branchの変更に成功しました。\n\(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました"
+            else
+              "Production Branchの変更に失敗しました。\nエラーコード: \(.errors[].code) \nエラーメッセージ: \(.errors[].message)" 
+            end
+            ')
+          echo "$result"
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
