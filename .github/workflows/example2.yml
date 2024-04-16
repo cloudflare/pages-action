@@ -14,10 +14,10 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           # Explicit branch name needed because of: https://github.com/cloudflare/pages-action/issues/97
-          branch: ${{ github.head_ref || github.ref_name }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           environment: 'production'
-          command: pages deploy example --project-name=github-actions-example --branch=main
+          command: pages deploy example --project-name=github-actions-example --branch=develop
+          #command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
         id: publish
 
