@@ -10,14 +10,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: set production branch
+        run: |
+          curl --request PATCH \
+            --url https://api.cloudflare.com/client/v4/accounts/YOUR_ACCOUNT_IDENTIFIER_HERE/pages/projects/github-actions-example \
+            --header 'Content-Type: application/json' \
+            --header 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
+            --data '{ "production_branch": "develop" }'
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           # Explicit branch name needed because of: https://github.com/cloudflare/pages-action/issues/97
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          environment: 'Preview'
-          command: pages deploy example --project-name=github-actions-example --branch=main
+          command: pages deploy example --project-name=github-actions-example --branch=develop
           #command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
         id: publish
 
