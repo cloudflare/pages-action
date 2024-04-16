@@ -13,7 +13,7 @@ jobs:
       - name: set production branch
         run: |
           curl --request PATCH \
-          --url https://api.cloudflare.com/client/v4/accounts/github-actions-example/pages/projects/github-actions-example \
+          --url https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/github-actions-example \
           --header 'Content-Type: application/json' \
           --header 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
           --data '{ "production_branch": "develop" }'
