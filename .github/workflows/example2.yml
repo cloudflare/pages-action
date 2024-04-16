@@ -15,7 +15,7 @@ jobs:
           result=$(curl -sS -X PATCH \
             -H 'Content-Type: application/json' \
             -H 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
-            -d '{ "production_branch": "develop" }'
+            -d '{ "production_branch": "develop" }' \
             https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/github-actions-example)
           result=$(echo "$result" | jq  -r '
             if .success == true then
