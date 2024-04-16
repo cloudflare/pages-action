@@ -15,7 +15,7 @@ jobs:
           result=$(curl -sS -X PATCH \
             -H 'Content-Type: application/json' \
             -H 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
-            -d '{ "production_branch": "${PRODUCTION_BRANCH}" }' \
+            -d '{ "production_branch": \"${PRODUCTION_BRANCH}\" }' \
             https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/${PROJECT_NAME})
           result=$(echo "$result" | jq  -r '
             if .success == true then
@@ -46,11 +46,15 @@ jobs:
           script: |
             const output = `\n#### Cloudflare Pages set production branch ⚙️\`${{ steps.set-production-branch.outcome }}\`\n
             #### Cloudflare Pages Deploy 📖\`${{ steps.publish.outcome }}\`\n
+
             <details><summary>Deploying with Cloudflare Pages</summary>
-            \`\`\`cloudflare-pages-deploy\n
+
+            \`\`\`deploy\n
             ${process.env.CHANGE_BRANCH}
             \`\`\`
+
             </details>
+
             *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
             await core.summary
               .addHeading('Cloudflare Pages Deploy report')
