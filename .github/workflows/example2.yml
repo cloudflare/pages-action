@@ -56,7 +56,7 @@ jobs:
           PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
         run: |
           [[ $PUBLISH_CFPAGES_URL =~ (https?://)?([a-zA-Z0-9-]+)\.pages\.dev ]]
-          new_url="https://${ALIAS}.${BASH_REMATCH[2]}"
+          new_url="https://${ALIAS}.${BASH_REMATCH[2]}.pages.dev"
           echo $new_url
           echo alias_url=$new_url >> $GITHUB_ENV
       - name: Create Job Summary
@@ -74,9 +74,9 @@ jobs:
 
             🔗 ${process.env.PUBLISH_CFPAGES_URL}(${process.env.PUBLISH_CFPAGES_URL})\n
 
-            ${process.env.PUBLISH_CFPAGES_ALIAS ?
+            `${process.env.PUBLISH_CFPAGES_ALIAS ?
               `📌 Alias URL: ${process.env.PUBLISH_CFPAGES_ALIAS}(${process.env.PUBLISH_CFPAGES_ALIAS})\n`:"";
-            }
+            }`
 
             <details><summary>Deploying with Cloudflare Pages</summary>
 
