@@ -42,7 +42,7 @@ jobs:
         env:
           CHANGE_BRANCH: ${{ steps.set-production-branch.outputs.stdout }}
         with:
-          github-token: ${{ steps.app-token.outputs.token }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `\n#### Cloudflare Pages set production branch ⚙️\`${{ steps.set-production-branch.outcome }}\`\n
             #### Cloudflare Pages Deploy 📖\`${{ steps.publish.outcome }}\`\n
