@@ -13,10 +13,10 @@ jobs:
       - name: set production branch
         run: |
           curl --request PATCH \
-            --url https://api.cloudflare.com/client/v4/accounts/YOUR_ACCOUNT_IDENTIFIER_HERE/pages/projects/github-actions-example \
-            --header 'Content-Type: application/json' \
-            --header 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
-            --data '{ "production_branch": "develop" }'
+          --url https://api.cloudflare.com/client/v4/accounts/github-actions-example/pages/projects/github-actions-example \
+          --header 'Content-Type: application/json' \
+          --header 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
+          --data '{ "production_branch": "develop" }'
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
