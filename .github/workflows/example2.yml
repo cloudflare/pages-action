@@ -50,9 +50,9 @@ jobs:
           git-branch: ${{ github.ref_name }}
       - name: generate alias url
         id: generate-alias-url
-        if: steps.pages-branch-alias.outputs.alias != 'develop'
+        if: steps.pages-branch-alias.outputs.branch-alias != 'develop'
         env:
-          ALIAS: ${{ steps.pages-branch-alias.outputs.alias }}
+          ALIAS: ${{ steps.pages-branch-alias.outputs.branch-alias }}
           PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
         run: |
           [[ $PUBLISH_CFPAGES_URL =~ (https?://)?([a-zA-Z0-9-]+)\.pages\.dev ]]
