@@ -65,7 +65,7 @@ jobs:
           CHANGE_BRANCH: ${{ steps.set-production-branch.outputs.summary }}
           PUBLISH_CFPAGES: ${{ steps.publish.outputs.command-output }}
           PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
-          PUBLISH_CFPAGES_ALIAS: ${{ steps.generate-alias-url.outputs.alias }}
+          PUBLISH_CFPAGES_ALIAS: ${{ steps.generate-alias-url.outputs.alias_url }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
