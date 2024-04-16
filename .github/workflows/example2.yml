@@ -56,9 +56,9 @@ jobs:
           PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
         run: |
           [[ $PUBLISH_CFPAGES_URL =~ (https?://)?([a-zA-Z0-9-]+)\.pages\.dev ]]
-          new_url="${ALIAS}${BASH_REMATCH[2]}"
+          new_url="https://${ALIAS}.${BASH_REMATCH[2]}"
           echo $new_url
-          echo alias_url=https://${new_url} >> $GITHUB_ENV
+          echo alias_url=$new_url >> $GITHUB_ENV
       - name: Create Job Summary
         uses: actions/github-script@v7
         env:
