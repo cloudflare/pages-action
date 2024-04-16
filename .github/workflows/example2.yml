@@ -47,7 +47,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           CHANGE_BRANCH: ${{ steps.set-production-branch.outputs.summary }}
-          PUBLISH_CFPAGES: ${{ steps.publish.output.command-output }}
+          PUBLISH_CFPAGES: ${{ steps.publish.outputs.command-output }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
