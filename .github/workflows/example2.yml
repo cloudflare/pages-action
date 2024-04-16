@@ -17,7 +17,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           environment: 'preview'
-          command: pages deploy example --project-name=github-actions-example --branch=develop
+          command: pages deploy example --project-name=github-actions-example --branch=main
           #command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
         id: publish
 
