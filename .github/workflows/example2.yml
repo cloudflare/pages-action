@@ -25,6 +25,7 @@ jobs:
             end
             ')
           echo "$result"
+
           { echo 'summary<<EOF'
             echo "$result"
             echo 'EOF'
@@ -46,6 +47,7 @@ jobs:
         uses: actions/github-script@v7
         env:
           CHANGE_BRANCH: ${{ steps.set-production-branch.outputs.summary }}
+          PUBLISH_CFPAGES: ${{ steps.publish.output.command-output }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -56,6 +58,7 @@ jobs:
 
             \`\`\`deploy\n
             ${process.env.CHANGE_BRANCH}
+            ${process.env.PUBLISH_CFPAGES}
             \`\`\`
 
             </details>
