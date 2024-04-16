@@ -74,8 +74,8 @@ jobs:
 
             🔗 ${process.env.PUBLISH_CFPAGES_URL}(${process.env.PUBLISH_CFPAGES_URL})\n
 
-            if (process.env.PUBLISH_CFPAGES_ALIAS) {
-              `📌 Alias URL: ${process.env.PUBLISH_CFPAGES_ALIAS}(${process.env.PUBLISH_CFPAGES_ALIAS})\n`;
+            ${process.env.PUBLISH_CFPAGES_ALIAS ?
+              `📌 Alias URL: ${process.env.PUBLISH_CFPAGES_ALIAS}(${process.env.PUBLISH_CFPAGES_ALIAS})\n`:"";
             }
 
             <details><summary>Deploying with Cloudflare Pages</summary>
