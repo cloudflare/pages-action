@@ -15,23 +15,44 @@ jobs:
           result=$(curl -sS -X PATCH \
             -H 'Content-Type: application/json' \
             -H 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
-            -d '{ "production_branch": "develop" }' \
-            https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/github-actions-example)
+            -d '{ "production_branch": "${PRODUCTION_BRANCH}" }' \
+            https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/${PROJECT_NAME})
           result=$(echo "$result" | jq  -r '
             if .success == true then
-              "Cloudflare Pages Production Branchの変更に成功しました。\n\(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました"
+              "✅ Cloudflare Pages Production Branchの変更に成功しました。\n✨ \(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました"
             else
-              "Cloudflare Pages Production Branchの変更に失敗しました。\nエラーコード: \(.errors[].code) \nエラーメッセージ: \(.errors[].message)" 
+              "❌ Cloudflare Pages Production Branchの変更に失敗しました。\n📝エラーコード: \(.errors[].code) \nエラーメッセージ: \(.errors[].message)" 
             end
             ')
           echo "$result"
+        env:
+          PROJECT_NAME: github-actions-example
+          PRODUCTION_BRANCH: develop
+        id: set-production-branch
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           # Explicit branch name needed because of: https://github.com/cloudflare/pages-action/issues/97
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy example --project-name=github-actions-example --branch=develop
-          #command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
         id: publish
-
+      - name: Create Job Summary
+        uses: actions/github-script@v7
+        env:
+          CHANGE_BRANCH: ${{ steps.set-production-branch.outputs.stdout }}
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const output = `\n#### Cloudflare Pages set production branch ⚙️\`${{ steps.set-production-branch.outcome }}\`\n
+            #### Cloudflare Pages Deploy 📖\`${{ steps.publish.outcome }}\`\n
+            <details><summary>Deploying with Cloudflare Pages</summary>
+            \`\`\`cloudflare-pages-deploy\n
+            ${process.env.CHANGE_BRANCH}
+            \`\`\`
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+            await core.summary
+              .addHeading('Cloudflare Pages Deploy report')
+              .addRaw(output)
+              .write()
