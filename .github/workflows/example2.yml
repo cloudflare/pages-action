@@ -1,5 +1,9 @@
 on: [push,workflow_dispatch]
 
+env:
+  PROJECT_NAME: github-actions-example
+  PRODUCTION_BRANCH: develop
+
 jobs:
   example:
     runs-on: ubuntu-latest
@@ -30,9 +34,6 @@ jobs:
             echo "$result"
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
-        env:
-          PROJECT_NAME: github-actions-example
-          PRODUCTION_BRANCH: develop
         id: set-production-branch
       - name: Publish to Cloudflare Pages
         if: steps.set-production-branch.outcome == 'success'
@@ -41,7 +42,7 @@ jobs:
           # Explicit branch name needed because of: https://github.com/cloudflare/pages-action/issues/97
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy example --project-name=github-actions-example --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy example --project-name=${{ env.PROJECT_NAME }}) --branch=${{ github.head_ref || github.ref_name }}
         id: publish
       - name: generate alias url
         id: generate-alias-url
