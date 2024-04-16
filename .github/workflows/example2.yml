@@ -15,8 +15,8 @@ jobs:
           result=$(curl -sS -X PATCH \
             -H 'Content-Type: application/json' \
             -H 'Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}' \
-            -d '{ "production_branch": \"${PRODUCTION_BRANCH}\" }' \
-            https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/${PROJECT_NAME})
+            -d '{ "production_branch": "${{ env.PRODUCTION_BRANCH }" }' \
+            https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/${{ env.PROJECT_NAME }})
           result=$(echo "$result" | jq  -r '
             if .success == true then
               "✅ Cloudflare Pages Production Branchの変更に成功しました。\n✨ \(.result.latest_deployment.production_branch)から\(.result.production_branch)に変更されました"
@@ -30,6 +30,7 @@ jobs:
           PRODUCTION_BRANCH: develop
         id: set-production-branch
       - name: Publish to Cloudflare Pages
+        if: steps.set-production-branch.outcome == 'success'
         uses: cloudflare/wrangler-action@v3
         with:
           # Explicit branch name needed because of: https://github.com/cloudflare/pages-action/issues/97
