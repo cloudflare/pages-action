@@ -103,7 +103,7 @@ jobs:
               `📌 Branch Preview URL: [${process.env.PUBLISH_CFPAGES_ALIAS}](${process.env.PUBLISH_CFPAGES_ALIAS})\n`:""
             }
             commit hash: \`${{ github.event.head_commit.id }}\`\n
-            commit message: [${{ github.event.head_commit.message}}](${{ github.server_url }}/${{ github.repository }}/tree/${{ github.event.head_commit.id}})/\n
+            commit message: [${{ github.event.head_commit.message}}](${{ github.server_url }}/${{ github.repository }}/tree/${{ github.event.head_commit.id}})\n
             commit author: \`${{ github.event.head_commit.author.name }}\`\n
             commit date: \`${{ github.event.head_commit.timestamp }}\`\n
             
