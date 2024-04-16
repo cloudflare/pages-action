@@ -58,7 +58,7 @@ jobs:
           [[ $PUBLISH_CFPAGES_URL =~ (https?://)?([a-zA-Z0-9-]+)\.pages\.dev ]]
           new_url="https://${ALIAS}.${BASH_REMATCH[2]}.pages.dev"
           echo $new_url
-          echo alias-url=$new_url >> $GITHUB_ENV
+          echo alias-url=$new_url >> $GITHUB_OUTPUT
       - name: Create Job Summary
         uses: actions/github-script@v7
         env:
