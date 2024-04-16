@@ -48,11 +48,14 @@ jobs:
         env:
           CHANGE_BRANCH: ${{ steps.set-production-branch.outputs.summary }}
           PUBLISH_CFPAGES: ${{ steps.publish.outputs.command-output }}
+          PUBLISH_CFPAGES_URL: ${{ steps.publish.outputs.deployment-url }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `\n#### Cloudflare Pages set production branch ⚙️\`${{ steps.set-production-branch.outcome }}\`\n
             #### Cloudflare Pages Deploy 📖\`${{ steps.publish.outcome }}\`\n
+
+            <a>🔗 [Cloudflare Pages Deploy URL](${process.env.PUBLISH_CFPAGES_URL})</a>\n
 
             <details><summary>Deploying with Cloudflare Pages</summary>
 
