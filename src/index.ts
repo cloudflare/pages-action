@@ -5,6 +5,7 @@ import shellac from "shellac";
 import { fetch } from "undici";
 import { env } from "process";
 import path from "node:path";
+import { generateURL } from "./generateAlias";
 
 type Octokit = ReturnType<typeof getOctokit>;
 
@@ -15,8 +16,32 @@ try {
 	const directory = getInput("directory", { required: true });
 	const gitHubToken = getInput("gitHubToken", { required: false });
 	const branch = getInput("branch", { required: false });
+	const production_branch = getInput("productionBranch", { required: true });
 	const workingDirectory = getInput("workingDirectory", { required: false });
 	const wranglerVersion = getInput("wranglerVersion", { required: false });
+	const setProductionBranch = async (): Promise<{ before_branch: string, current_branch: string }> => {
+		const response = await fetch(
+			`https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
+			{
+				headers: {
+					Authorization: `Bearer ${apiToken}`,
+					"Content-Type": "application/json",
+				},
+				method: "PATCH",
+				body: JSON.stringify({
+					production_branch: production_branch,
+				}),
+			}
+		);
+		const json: any = await response.json();
+		if (response.status !== 200) {
+			console.error(`Cloudflare API returned non-200: ${response.status}`);
+			const json = await response.text();
+			console.error(`API returned: ${json}`);
+			throw new Error("Failed to set production branch, API returned non-200");
+		}
+		return { before_branch: json.result.latest_deployment.production_branch, current_branch: json.result.production_branch };
+	}
 
 	const getProject = async () => {
 		const response = await fetch(
@@ -109,7 +134,7 @@ try {
 		});
 	};
 
-	const createJobSummary = async ({ deployment, aliasUrl }: { deployment: Deployment; aliasUrl: string }) => {
+	const createJobSummary = async ({ deployment, aliasUrl }: { deployment: Deployment; aliasUrl: string | undefined }) => {
 		const deployStage = deployment.stages.find((stage) => stage.name === "deploy");
 
 		let status = "⚡️  Deployment in progress...";
@@ -118,7 +143,6 @@ try {
 		} else if (deployStage?.status === "failure") {
 			status = "🚫  Deployment failed";
 		}
-
 		await summary
 			.addRaw(
 				`
@@ -129,13 +153,14 @@ try {
 | **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
 | **Status**:             | ${status} |
 | **Preview URL**:        | ${deployment.url} |
-| **Branch Preview URL**: | ${aliasUrl} |
+| **Branch Preview URL**: | ${aliasUrl ? aliasUrl : "This URL was not generated because the branch is the production branch."} |
       `
 			)
 			.write();
 	};
 
 	(async () => {
+		const { before_branch, current_branch } = await setProductionBranch();
 		const project = await getProject();
 
 		const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
@@ -149,14 +174,17 @@ try {
 		}
 
 		const pagesDeployment = await createPagesDeployment();
+
+		let alias = "";
+
+		if (branch != production_branch) {
+			alias = generateURL(branch, pagesDeployment.url);
+		}
+
 		setOutput("id", pagesDeployment.id);
 		setOutput("url", pagesDeployment.url);
 		setOutput("environment", pagesDeployment.environment);
 
-		let alias = pagesDeployment.url;
-		if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
-			alias = pagesDeployment.aliases[0];
-		}
 		setOutput("alias", alias);
 
 		await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
@@ -172,6 +200,10 @@ try {
 				productionEnvironment,
 				octokit,
 			});
+		}
+
+		if (before_branch !== current_branch) {
+			await summary.addRaw(`Production branch change from ${before_branch} to ${current_branch} succeeded!`).write();
 		}
 	})();
 } catch (thrown) {

@@ -22061,6 +22061,55 @@ var src_default = shellac;
 var import_undici = __toESM(require_undici());
 var import_process = require("process");
 var import_node_path = __toESM(require("path"));
+
+// src/generateAlias.ts
+var invalidCharsRegex = /[^a-z0-9-]/g;
+var maxAliasLength = 28;
+var alphanum = "abcdefghijklmnopqrstuvwxyz0123456789";
+var generateURL = (branch, URL2) => {
+  const generatedBranch = generateBranchAlias(branch);
+  if (!generatedBranch) {
+    return "";
+  }
+  const url = URL2.split(".");
+  url[0] = "https://" + branch;
+  return url.join(".");
+};
+function generateBranchAlias(branch) {
+  let normalised = branch.toLowerCase().replace(invalidCharsRegex, "-");
+  if (normalised.length > maxAliasLength) {
+    normalised = normalised.substring(0, maxAliasLength);
+  }
+  normalised = trim(normalised, "-");
+  if (normalised === "") {
+    return `branch-${randAlphaNum(10)}`;
+  }
+  return normalised;
+}
+function trim(str, char) {
+  while (str.startsWith(char)) {
+    if (str.length === 1) {
+      return "";
+    }
+    str = str.substring(1);
+  }
+  while (str.endsWith(char)) {
+    if (str.length === 1) {
+      return "";
+    }
+    str = str.substring(0, str.length - 1);
+  }
+  return str;
+}
+function randAlphaNum(length) {
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += alphanum[Math.floor(Math.random() * alphanum.length)];
+  }
+  return result;
+}
+
+// src/index.ts
 try {
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
   const accountId = (0, import_core.getInput)("accountId", { required: true });
@@ -22068,8 +22117,32 @@ try {
   const directory = (0, import_core.getInput)("directory", { required: true });
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: false });
   const branch = (0, import_core.getInput)("branch", { required: false });
+  const production_branch = (0, import_core.getInput)("productionBranch", { required: true });
   const workingDirectory = (0, import_core.getInput)("workingDirectory", { required: false });
   const wranglerVersion = (0, import_core.getInput)("wranglerVersion", { required: false });
+  const setProductionBranch = async () => {
+    const response = await (0, import_undici.fetch)(
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+          "Content-Type": "application/json"
+        },
+        method: "PATCH",
+        body: JSON.stringify({
+          production_branch
+        })
+      }
+    );
+    const json = await response.json();
+    if (response.status !== 200) {
+      console.error(`Cloudflare API returned non-200: ${response.status}`);
+      const json2 = await response.text();
+      console.error(`API returned: ${json2}`);
+      throw new Error("Failed to set production branch, API returned non-200");
+    }
+    return { before_branch: json.result.latest_deployment.production_branch, current_branch: json.result.production_branch };
+  };
   const getProject = async () => {
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
@@ -22159,11 +22232,12 @@ try {
 | **Last commit:**        | \`${deployment.deployment_trigger.metadata.commit_hash.substring(0, 8)}\` |
 | **Status**:             | ${status} |
 | **Preview URL**:        | ${deployment.url} |
-| **Branch Preview URL**: | ${aliasUrl} |
+| **Branch Preview URL**: | ${aliasUrl ? aliasUrl : "This URL was not generated because the branch is the production branch."} |
       `
     ).write();
   };
   (async () => {
+    const { before_branch, current_branch } = await setProductionBranch();
     const project = await getProject();
     const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
     const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
@@ -22173,13 +22247,13 @@ try {
       gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
     }
     const pagesDeployment = await createPagesDeployment();
+    let alias = "";
+    if (branch != production_branch) {
+      alias = generateURL(branch, pagesDeployment.url);
+    }
     (0, import_core.setOutput)("id", pagesDeployment.id);
     (0, import_core.setOutput)("url", pagesDeployment.url);
     (0, import_core.setOutput)("environment", pagesDeployment.environment);
-    let alias = pagesDeployment.url;
-    if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
-      alias = pagesDeployment.aliases[0];
-    }
     (0, import_core.setOutput)("alias", alias);
     await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
     if (gitHubDeployment) {
@@ -22192,6 +22266,9 @@ try {
         productionEnvironment,
         octokit
       });
+    }
+    if (before_branch !== current_branch) {
+      await import_core.summary.addRaw(`Production branch change from ${before_branch} to ${current_branch} succeeded!`).write();
     }
   })();
 } catch (thrown) {
