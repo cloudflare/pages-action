@@ -17,6 +17,7 @@ try {
 	const branch = getInput("branch", { required: false });
 	const workingDirectory = getInput("workingDirectory", { required: false });
 	const wranglerVersion = getInput("wranglerVersion", { required: false });
+	const packageManager = getInput("packageManager", { required: false });
 
 	const getProject = async () => {
 		const response = await fetch(
@@ -39,6 +40,13 @@ try {
 	};
 
 	const createPagesDeployment = async () => {
+		let packageRunner = "npx"
+		if(packageManager === "pnpm") {
+			packageRunner = "pnpm dlx"
+		} else if (packageManager === "bun") {
+			packageRunner = "bunx"			
+		}
+
 		// TODO: Replace this with an API call to wrangler so we can get back a full deployment response object
 		await shellac.in(path.join(process.cwd(), workingDirectory))`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
@@ -46,7 +54,7 @@ try {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
   
-    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    $$ ${packageRunner} wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
     `;
 
 		const response = await fetch(
