@@ -19,6 +19,7 @@ inputs:
   gitHubToken:
     description: "GitHub Token"
     required: false
+    default: ${{ github.token }}
   branch:
     description: "The name of the branch you want to deploy to"
     required: false
