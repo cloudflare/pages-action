@@ -22072,7 +22072,7 @@ var generateURL = (branch, URL2) => {
     return "";
   }
   const url = URL2.split(".");
-  url[0] = "https://" + branch;
+  url[0] = "https://" + generatedBranch;
   return url.join(".");
 };
 function generateBranchAlias(branch) {

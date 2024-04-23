@@ -13,7 +13,7 @@ export const generateURL = (branch: string, URL: string): string => {
         return ""
     }
     const url = URL.split(".");
-    url[0] = "https://" + branch;
+    url[0] = "https://" + generatedBranch;
     return url.join(".")
 }
 function generateBranchAlias(branch: string): string | undefined {
