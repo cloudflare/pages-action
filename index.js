@@ -22141,7 +22141,7 @@ try {
       auto_inactive: false
     });
   };
-  const createJobSummary = async ({ deployment, aliasUrl }) => {
+  const generateSummaryBody = ({ deployment, aliasUrl }) => {
     const deployStage = deployment.stages.find((stage) => stage.name === "deploy");
     let status = "\u26A1\uFE0F  Deployment in progress...";
     if (deployStage?.status === "success") {
@@ -22149,8 +22149,7 @@ try {
     } else if (deployStage?.status === "failure") {
       status = "\u{1F6AB}  Deployment failed";
     }
-    await import_core.summary.addRaw(
-      `
+    return `
 # ${projectName} Deploying with Cloudflare Pages
 
 | Name                    | Result |
@@ -22159,16 +22158,30 @@ try {
 | **Status**:             | ${status} |
 | **Preview URL**:        | ${deployment.url} |
 | **Branch Preview URL**: | ${aliasUrl} |
-      `
-    ).write();
+					  `;
+  };
+  const createJobSummary = async (params) => {
+    const body = generateSummaryBody(params);
+    await import_core.summary.addRaw(body).write();
+  };
+  const createPullRequesComment = async (octokit, params) => {
+    const body = generateSummaryBody(params);
+    const pullRequestPayload = import_github.context.payload;
+    await octokit.rest.issues.createComment({
+      owner: import_github.context.repo.owner,
+      repo: import_github.context.repo.repo,
+      issue_number: pullRequestPayload.pull_request.number,
+      body
+    });
   };
   (async () => {
     const project = await getProject();
     const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
     const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
     let gitHubDeployment;
+    let octokit = null;
     if (gitHubToken && gitHubToken.length) {
-      const octokit = (0, import_github.getOctokit)(gitHubToken);
+      octokit = (0, import_github.getOctokit)(gitHubToken);
       gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
     }
     const pagesDeployment = await createPagesDeployment();
@@ -22181,15 +22194,18 @@ try {
     }
     (0, import_core.setOutput)("alias", alias);
     await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
+    if (octokit && import_github.context.eventName === "pull_request") {
+      await createPullRequesComment(octokit, { deployment: pagesDeployment, aliasUrl: alias });
+    }
     if (gitHubDeployment) {
-      const octokit = (0, import_github.getOctokit)(gitHubToken);
+      const octokit2 = (0, import_github.getOctokit)(gitHubToken);
       await createGitHubDeploymentStatus({
         id: gitHubDeployment.id,
         url: pagesDeployment.url,
         deploymentId: pagesDeployment.id,
         environmentName,
         productionEnvironment,
-        octokit
+        octokit: octokit2
       });
     }
   })();

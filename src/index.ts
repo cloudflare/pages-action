@@ -1,12 +1,14 @@
 import { getInput, setOutput, setFailed, summary } from "@actions/core";
 import type { Project, Deployment } from "@cloudflare/types";
 import { context, getOctokit } from "@actions/github";
+import { PullRequestEvent } from "@octokit/webhooks-definitions/schema";
 import shellac from "shellac";
 import { fetch } from "undici";
 import { env } from "process";
 import path from "node:path";
 
 type Octokit = ReturnType<typeof getOctokit>;
+type SummaryBodyParams = { deployment: Deployment; aliasUrl: string };
 
 try {
 	const apiToken = getInput("apiToken", { required: true });
@@ -108,7 +110,7 @@ try {
 		});
 	};
 
-	const createJobSummary = async ({ deployment, aliasUrl }: { deployment: Deployment; aliasUrl: string }) => {
+	const generateSummaryBody = ({ deployment, aliasUrl }: SummaryBodyParams) => {
 		const deployStage = deployment.stages.find((stage) => stage.name === "deploy");
 
 		let status = "⚡️  Deployment in progress...";
@@ -117,10 +119,7 @@ try {
 		} else if (deployStage?.status === "failure") {
 			status = "🚫  Deployment failed";
 		}
-
-		await summary
-			.addRaw(
-				`
+		return `
 # ${projectName} Deploying with Cloudflare Pages
 
 | Name                    | Result |
@@ -129,9 +128,23 @@ try {
 | **Status**:             | ${status} |
 | **Preview URL**:        | ${deployment.url} |
 | **Branch Preview URL**: | ${aliasUrl} |
-      `
-			)
-			.write();
+					  `;
+	};
+
+	const createJobSummary = async (params: SummaryBodyParams) => {
+		const body = generateSummaryBody(params);
+		await summary.addRaw(body).write();
+	};
+
+	const createPullRequesComment = async (octokit: Octokit, params: SummaryBodyParams) => {
+		const body = generateSummaryBody(params);
+		const pullRequestPayload = context.payload as PullRequestEvent;
+		await octokit.rest.issues.createComment({
+			owner: context.repo.owner,
+			repo: context.repo.repo,
+			issue_number: pullRequestPayload.pull_request.number,
+			body,
+		});
 	};
 
 	(async () => {
@@ -141,9 +154,10 @@ try {
 		const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
 
 		let gitHubDeployment: Awaited<ReturnType<typeof createGitHubDeployment>>;
+		let octokit: Octokit | null = null;
 
 		if (gitHubToken && gitHubToken.length) {
-			const octokit = getOctokit(gitHubToken);
+			octokit = getOctokit(gitHubToken);
 			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
 		}
 
@@ -159,6 +173,10 @@ try {
 		setOutput("alias", alias);
 
 		await createJobSummary({ deployment: pagesDeployment, aliasUrl: alias });
+
+		if (octokit && context.eventName === "pull_request") {
+			await createPullRequesComment(octokit, { deployment: pagesDeployment, aliasUrl: alias });
+		}
 
 		if (gitHubDeployment) {
 			const octokit = getOctokit(gitHubToken);
