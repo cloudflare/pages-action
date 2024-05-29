@@ -14,7 +14,7 @@ jobs:
         uses: ./
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: 468cce80dfb431f3a4058e6dc6031a44
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           projectName: github-actions-example
           directory: example
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -13,9 +13,6 @@ inputs:
   projectName:
     description: "The name of the Pages project to upload to"
     required: true
-  directory:
-    description: "The directory of static assets to upload"
-    required: true
   gitHubToken:
     description: "GitHub Token"
     required: false
@@ -28,7 +25,7 @@ inputs:
   wranglerVersion:
     description: "The version of Wrangler to use"
     required: false
-    default: "2"
+    default: "3.57.2"
 runs:
   using: "node16"
   main: "index.js"

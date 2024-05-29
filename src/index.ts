@@ -12,7 +12,6 @@ try {
 	const apiToken = getInput("apiToken", { required: true });
 	const accountId = getInput("accountId", { required: true });
 	const projectName = getInput("projectName", { required: true });
-	const directory = getInput("directory", { required: true });
 	const gitHubToken = getInput("gitHubToken", { required: false });
 	const branch = getInput("branch", { required: false });
 	const workingDirectory = getInput("workingDirectory", { required: false });
@@ -46,7 +45,7 @@ try {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
   
-    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    $$ npx wrangler@${wranglerVersion} pages deploy
     `;
 
 		const response = await fetch(
@@ -122,7 +121,7 @@ try {
 		await summary
 			.addRaw(
 				`
-# Deploying with Cloudflare Pages
+# ${projectName} Deploying with Cloudflare Pages
 
 | Name                    | Result |
 | ----------------------- | - |
