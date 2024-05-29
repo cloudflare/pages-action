@@ -22065,7 +22065,6 @@ try {
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
   const accountId = (0, import_core.getInput)("accountId", { required: true });
   const projectName = (0, import_core.getInput)("projectName", { required: true });
-  const directory = (0, import_core.getInput)("directory", { required: true });
   const gitHubToken = (0, import_core.getInput)("gitHubToken", { required: false });
   const branch = (0, import_core.getInput)("branch", { required: false });
   const workingDirectory = (0, import_core.getInput)("workingDirectory", { required: false });
@@ -22094,7 +22093,7 @@ try {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
   
-    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    $$ npx wrangler@${wranglerVersion} pages deploy
     `;
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/deployments`,
@@ -22152,7 +22151,7 @@ try {
     }
     await import_core.summary.addRaw(
       `
-# Deploying with Cloudflare Pages
+# ${projectName} Deploying with Cloudflare Pages
 
 | Name                    | Result |
 | ----------------------- | - |
