@@ -21112,8 +21112,8 @@ var __publicField2 = (obj, key, value) => {
   return value;
 };
 var Shell = class {
+  process;
   constructor(env_passthrough = ["PATH"]) {
-    __publicField(this, "process");
     const env2 = { PS1: "" };
     env_passthrough.forEach((key) => {
       env2[key] = process.env[key];
@@ -21150,6 +21150,21 @@ var trimFinalNewline = (input) => {
   return input;
 };
 var Command = class {
+  shell;
+  cmd;
+  cwd;
+  interactive;
+  exec;
+  runningState;
+  pipe_logs;
+  exit_expected;
+  retCode;
+  promiseResolve;
+  promiseReject;
+  promise;
+  timer;
+  stdout;
+  stderr;
   constructor({
     cwd,
     shell,
@@ -21158,123 +21173,6 @@ var Command = class {
     pipe_logs = false,
     exit_expected = false
   }) {
-    __publicField(this, "shell");
-    __publicField(this, "cmd");
-    __publicField(this, "cwd");
-    __publicField(this, "interactive");
-    __publicField(this, "exec");
-    __publicField(this, "runningState");
-    __publicField(this, "pipe_logs");
-    __publicField(this, "exit_expected");
-    __publicField(this, "retCode");
-    __publicField(this, "promiseResolve");
-    __publicField(this, "promiseReject");
-    __publicField(this, "promise");
-    __publicField(this, "timer");
-    __publicField(this, "stdout");
-    __publicField(this, "stderr");
-    __publicField(this, "handleStdoutData", (data) => {
-      const lines = trimFinalNewline(data).split(/\r?\n/);
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const match = line.match(/__END_OF_COMMAND_\[(\d+)\]__/);
-        if (match) {
-          this.retCode = parseInt(match[1]);
-          setImmediate(this.finish);
-          return;
-        } else {
-          if (this.pipe_logs)
-            process.stdout.write(line + "\n");
-          this.stdout += line + "\n";
-        }
-        if (this.interactive) {
-          this.interactive(line, this.handleStdinData);
-        }
-      }
-    });
-    __publicField(this, "handleStderrData", (data) => {
-      if (this.pipe_logs)
-        process.stderr.write(data);
-      this.stderr += data;
-    });
-    __publicField(this, "handleStdinData", (data) => {
-      this.shell.getStdin().write(`${data}
-`);
-    });
-    __publicField(this, "run", () => {
-      let promiseResolve, promiseReject;
-      const promise = new Promise((resolve, reject) => {
-        promiseResolve = resolve;
-        promiseReject = reject;
-      });
-      this.promiseResolve = promiseResolve;
-      this.promiseReject = promiseReject;
-      this.promise = promise;
-      this.runningState = 1;
-      this.shell.getStdin().write(this.exec);
-      this.timer = setTimeout(() => {
-        if (this.runningState !== 2) {
-          const obj = {
-            retCode: -1,
-            cmd: this.cmd,
-            stdout: this.stdout,
-            stderr: this.stderr
-          };
-          this.promiseReject(obj);
-        }
-      }, 864e5);
-      return promise.then(() => this, (e) => {
-        this.log(`
-
-SHELLAC COMMAND FAILED!
-Executing: ${this.cmd} in ${this.cwd}
-
-STDOUT:
-
-`);
-        this.log(`${this.stdout}
-
-`);
-        this.log(`STDERR:
-
-${this.stderr}
-
-`);
-        this.shell.exit();
-        throw e;
-      });
-    });
-    __publicField(this, "finish", () => {
-      this.runningState = 2;
-      clearTimeout(this.timer);
-      this.shell.getStdout().removeListener("data", this.handleStdoutData);
-      this.shell.getStderr().removeListener("data", this.handleStderrData);
-      const obj = {
-        retCode: this.retCode,
-        cmd: this.cmd,
-        stdout: this.stdout,
-        stderr: this.stderr
-      };
-      const matching_exit_code = this.retCode === this.exit_expected;
-      if (!matching_exit_code) {
-        if (this.exit_expected === true) {
-          if (this.retCode === 0) {
-            this.log("NO EXIT WHEN EXPECTED");
-            return this.promiseReject(obj);
-          }
-        } else if (this.exit_expected === false) {
-          if (this.retCode !== 0) {
-            this.log("EXIT WHEN NOT EXPECTED");
-            return this.promiseReject(obj);
-          }
-        } else {
-          this.log(`EXIT CODE DIDN'T MATCH`);
-          return this.promiseReject(obj);
-        }
-      }
-      return this.promiseResolve(obj);
-    });
-    __publicField(this, "log", Shell.logger);
     this.shell = shell;
     this.cmd = cmd;
     this.cwd = cwd;
@@ -21291,6 +21189,108 @@ ${this.cmd};echo __END_OF_COMMAND_[$?]__
     this.stdout = "";
     this.stderr = "";
   }
+  handleStdoutData = (data) => {
+    const lines = trimFinalNewline(data).split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const match = line.match(/__END_OF_COMMAND_\[(\d+)\]__/);
+      if (match) {
+        this.retCode = parseInt(match[1]);
+        setImmediate(this.finish);
+        return;
+      } else {
+        if (this.pipe_logs)
+          process.stdout.write(line + "\n");
+        this.stdout += line + "\n";
+      }
+      if (this.interactive) {
+        this.interactive(line, this.handleStdinData);
+      }
+    }
+  };
+  handleStderrData = (data) => {
+    if (this.pipe_logs)
+      process.stderr.write(data);
+    this.stderr += data;
+  };
+  handleStdinData = (data) => {
+    this.shell.getStdin().write(`${data}
+`);
+  };
+  run = () => {
+    let promiseResolve, promiseReject;
+    const promise = new Promise((resolve, reject) => {
+      promiseResolve = resolve;
+      promiseReject = reject;
+    });
+    this.promiseResolve = promiseResolve;
+    this.promiseReject = promiseReject;
+    this.promise = promise;
+    this.runningState = 1;
+    this.shell.getStdin().write(this.exec);
+    this.timer = setTimeout(() => {
+      if (this.runningState !== 2) {
+        const obj = {
+          retCode: -1,
+          cmd: this.cmd,
+          stdout: this.stdout,
+          stderr: this.stderr
+        };
+        this.promiseReject(obj);
+      }
+    }, 864e5);
+    return promise.then(() => this, (e) => {
+      this.log(`
+
+SHELLAC COMMAND FAILED!
+Executing: ${this.cmd} in ${this.cwd}
+
+STDOUT:
+
+`);
+      this.log(`${this.stdout}
+
+`);
+      this.log(`STDERR:
+
+${this.stderr}
+
+`);
+      this.shell.exit();
+      throw e;
+    });
+  };
+  finish = () => {
+    this.runningState = 2;
+    clearTimeout(this.timer);
+    this.shell.getStdout().removeListener("data", this.handleStdoutData);
+    this.shell.getStderr().removeListener("data", this.handleStderrData);
+    const obj = {
+      retCode: this.retCode,
+      cmd: this.cmd,
+      stdout: this.stdout,
+      stderr: this.stderr
+    };
+    const matching_exit_code = this.retCode === this.exit_expected;
+    if (!matching_exit_code) {
+      if (this.exit_expected === true) {
+        if (this.retCode === 0) {
+          this.log("NO EXIT WHEN EXPECTED");
+          return this.promiseReject(obj);
+        }
+      } else if (this.exit_expected === false) {
+        if (this.retCode !== 0) {
+          this.log("EXIT WHEN NOT EXPECTED");
+          return this.promiseReject(obj);
+        }
+      } else {
+        this.log(`EXIT CODE DIDN'T MATCH`);
+        return this.promiseReject(obj);
+      }
+    }
+    return this.promiseResolve(obj);
+  };
+  log = Shell.logger;
 };
 async function IfStatement(chunk, context2) {
   const { interps, last_cmd } = context2;
@@ -22060,7 +22060,7 @@ var src_default = shellac;
 // src/index.ts
 var import_undici = __toESM(require_undici());
 var import_process = require("process");
-var import_node_path = __toESM(require("path"));
+var import_node_path = __toESM(require("node:path"));
 try {
   const apiToken = (0, import_core.getInput)("apiToken", { required: true });
   const accountId = (0, import_core.getInput)("accountId", { required: true });
