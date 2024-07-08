@@ -4,7 +4,7 @@
 	"description": "Publish to Cloudflare Pages",
 	"main": "index.js",
 	"scripts": {
-		"build": "npx esbuild src/index.ts --bundle --platform=node --target=es2021 --outfile=index.js",
+		"build": "npx esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=index.js",
 		"prepare": "husky install",
 		"prettify": "prettier . --write --ignore-unknown"
 	},
