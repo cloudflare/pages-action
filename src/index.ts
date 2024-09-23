@@ -1,4 +1,4 @@
-import { getInput, setOutput, setFailed, summary } from "@actions/core";
+import { getInput, getBooleanInput, setOutput, setFailed, summary } from "@actions/core";
 import type { Project, Deployment } from "@cloudflare/types";
 import { context, getOctokit } from "@actions/github";
 import shellac from "shellac";
@@ -17,6 +17,7 @@ try {
 	const branch = getInput("branch", { required: false });
 	const workingDirectory = getInput("workingDirectory", { required: false });
 	const wranglerVersion = getInput("wranglerVersion", { required: false });
+	const bundle = getBooleanInput("bundle", { required: false });
 
 	const getProject = async () => {
 		const response = await fetch(
@@ -45,8 +46,8 @@ try {
     if ${accountId} {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
-  
-    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+
+    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}" ${bundle ? "" : "--no-bundle"}
     `;
 
 		const response = await fetch(

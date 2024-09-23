@@ -29,6 +29,9 @@ inputs:
     description: "The version of Wrangler to use"
     required: false
     default: "2"
+  bundle:
+    description: "Whether to run bundling on `_worker.js` before deploying"
+    required: false
 runs:
   using: "node16"
   main: "index.js"

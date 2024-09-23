@@ -1,4 +1,4 @@
-# Cloudflare Pages GitHub Action
+ # Cloudflare Pages GitHub Action
 
 GitHub Action for creating Cloudflare Pages deployments, using the new [Direct Upload](https://developers.cloudflare.com/pages/platform/direct-upload/) feature and [Wrangler](https://developers.cloudflare.com/pages/platform/direct-upload/#wrangler-cli) integration.
 
@@ -75,6 +75,10 @@ manually by adding the argument `branch: YOUR_BRANCH_NAME`.
 ### Specifying a working directory
 
 By default Wrangler will run in the root package directory. If your app lives in a monorepo and you want to run Wrangler from its directory, add `workingDirectory: YOUR_PACKAGE_DIRECTORY`.
+
+### Bundling
+
+When using [Advanced mode](https://developers.cloudflare.com/pages/platform/functions/advanced-mode/) Pages Functions will by default bundle your `_worker.js` file. If you want to disable this, add `bundle: false`.
 
 ### Wrangler v3
 
