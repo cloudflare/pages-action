@@ -46,9 +46,9 @@ GitHub Action for creating Cloudflare Pages deployments, using the new [Direct U
 
 ### Get account ID
 
-To find your account ID, log in to the Cloudflare dashboard > select your zone in Account Home > find your account ID in Overview under **API** on the right-side menu. If you have not added a zone, add one by selecting **Add site** . You can purchase a domain from [Cloudflare’s registrar](https://developers.cloudflare.com/registrar/).
+To find your account ID, log in to the Cloudflare dashboard, select Workers & Pages Overview, and find **Account ID** on the right-side menu. It should be identical to the ID from the `pages.dev` URL (e.g., `https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages`).
 
-If you do not have a zone registered to your account, you can also get your account ID from the `pages.dev` URL. E.g: `https://dash.cloudflare.com/<ACCOUNT_ID>/pages`
+Alternatively, select your zone in Account Home and find your account ID in Overview under **API** on the right-side menu. If you have not added a zone, add one by selecting **Add site** . You can purchase a domain from [Cloudflare’s registrar](https://developers.cloudflare.com/registrar/).
 
 ### Generate an API Token
 
