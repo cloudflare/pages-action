@@ -1,14 +1,17 @@
+# [DEPRECATED] Cloudflare Pages GitHub Action
+
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 > [!IMPORTANT]  
 > `pages-action` has been deprecated with the latest release being `v1.5.0`. We encourage you to migrate to [`wrangler-action`](https://github.com/cloudflare/wrangler-action), which supports Pages deployments and offers a unified tool for managing both Workers and Pages.
 > Here are a few important things to keep in mind as you make the migration:
-> - The YAML syntax for `wrangler-action` is different from `pages-action`. Please refer to the [Pages deployment setup instructions](https://github.com/cloudflare/wrangler-action?tab=readme-ov-file#deploy-your-pages-site-production--preview) for details.
+> - The YAML syntax for `wrangler-action` is different from `pages-action`. Please refer to the Pages deployment setup [instructions](https://github.com/cloudflare/wrangler-action?tab=readme-ov-file#deploy-your-pages-site-production--preview) for details.
 > - `wrangler-action` currently does not provide the same outputs as `pages-action` for Pages project deployments. If your workflows depend on these outputs, you may need to make temporary adjustments. Rest assured, we’re working to bring these outputs to `wrangler-action` soon. You can track our progress in this [issue](https://github.com/cloudflare/wrangler-action/issues/300).
 > - The "Deployment" feature available in `pages-action`, which lets you view a list of past deployments, is not yet available in `wrangler-action`, but we plan to add this in a future release of `wrangler-action`. You can track our progress in this [issue](https://github.com/cloudflare/wrangler-action/issues/301).
 >
-> We sincerely thank you for your support and contributions to `pages-action` over the years. The repository will remain open and archived. If you have any questions or issues please reach out to us on the [Cloudflare Developers Discord](https://discord.com/invite/cloudflaredev).
-
-
-# Cloudflare Pages GitHub Action
+> We sincerely thank you for your support and contributions to `pages-action` over the years. The repository will remain **open and archived**.
+>
+> If you have any questions or issues, please open an [issue](https://github.com/cloudflare/wrangler-action/issues) under `wrangler-action` or reach out to us directly on the [Cloudflare Developers Discord](https://discord.com/invite/cloudflaredev).
 
 GitHub Action for creating Cloudflare Pages deployments, using the new [Direct Upload](https://developers.cloudflare.com/pages/platform/direct-upload/) feature and [Wrangler](https://developers.cloudflare.com/pages/platform/direct-upload/#wrangler-cli) integration.
 
