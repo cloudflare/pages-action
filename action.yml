@@ -29,6 +29,15 @@ inputs:
     description: "The version of Wrangler to use"
     required: false
     default: "2"
+outputs:
+  id:
+    description: The ID of the pages deployment
+  url:
+    description: The URL of the pages deployment
+  alias:
+    description: The alias if it exists otherwise the deployment URL
+  environment: 
+    description: The environment that was deployed to
 runs:
   using: "node16"
   main: "index.js"
