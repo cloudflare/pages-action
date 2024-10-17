@@ -22070,6 +22070,7 @@ try {
   const branch = (0, import_core.getInput)("branch", { required: false });
   const workingDirectory = (0, import_core.getInput)("workingDirectory", { required: false });
   const wranglerVersion = (0, import_core.getInput)("wranglerVersion", { required: false });
+  const environmentName = (0, import_core.getInput)("environmentName", { required: false });
   const getProject = async () => {
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
@@ -22125,7 +22126,7 @@ try {
     id,
     url,
     deploymentId,
-    environmentName,
+    environmentName: environmentName2,
     productionEnvironment,
     octokit
   }) => {
@@ -22133,7 +22134,7 @@ try {
       owner: import_github.context.repo.owner,
       repo: import_github.context.repo.repo,
       deployment_id: id,
-      environment: environmentName,
+      environment: environmentName2,
       environment_url: url,
       production_environment: productionEnvironment,
       log_url: `https://dash.cloudflare.com/${accountId}/pages/view/${projectName}/${deploymentId}`,
@@ -22166,11 +22167,11 @@ try {
   (async () => {
     const project = await getProject();
     const productionEnvironment = githubBranch === project.production_branch || branch === project.production_branch;
-    const environmentName = `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
+    const cfEnvironmentName = environmentName ? environmentName : `${projectName} (${productionEnvironment ? "Production" : "Preview"})`;
     let gitHubDeployment;
     if (gitHubToken && gitHubToken.length) {
       const octokit = (0, import_github.getOctokit)(gitHubToken);
-      gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
+      gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, cfEnvironmentName);
     }
     const pagesDeployment = await createPagesDeployment();
     (0, import_core.setOutput)("id", pagesDeployment.id);
@@ -22188,7 +22189,7 @@ try {
         id: gitHubDeployment.id,
         url: pagesDeployment.url,
         deploymentId: pagesDeployment.id,
-        environmentName,
+        environmentName: cfEnvironmentName,
         productionEnvironment,
         octokit
       });
