@@ -22070,6 +22070,7 @@ try {
   const branch = (0, import_core.getInput)("branch", { required: false });
   const workingDirectory = (0, import_core.getInput)("workingDirectory", { required: false });
   const wranglerVersion = (0, import_core.getInput)("wranglerVersion", { required: false });
+  const packageManager = (0, import_core.getInput)("packageManager", { required: false });
   const getProject = async () => {
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}`,
@@ -22088,13 +22089,19 @@ try {
     return result;
   };
   const createPagesDeployment = async () => {
+    let packageRunner = "npx";
+    if (packageManager === "pnpm") {
+      packageRunner = "pnpm dlx";
+    } else if (packageManager === "bun") {
+      packageRunner = "bunx";
+    }
     await src_default.in(import_node_path.default.join(process.cwd(), workingDirectory))`
     $ export CLOUDFLARE_API_TOKEN="${apiToken}"
     if ${accountId} {
       $ export CLOUDFLARE_ACCOUNT_ID="${accountId}"
     }
   
-    $$ npx wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
+    $$ ${packageRunner} wrangler@${wranglerVersion} pages publish "${directory}" --project-name="${projectName}" --branch="${branch}"
     `;
     const response = await (0, import_undici.fetch)(
       `https://api.cloudflare.com/client/v4/accounts/${accountId}/pages/projects/${projectName}/deployments`,
