@@ -18,6 +18,8 @@ jobs:
           projectName: github-actions-example
           directory: example
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref || github.ref_name }}
+          productionBranch: main
         id: publish
       - name: Outputs
         run: |
